@@ -1,5 +1,5 @@
 from unittest import main, defaultTestLoader
-from wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
+from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
 TEST_MODULE = "tests"
 TESTLINK_API_KEY = ""
 TESTLINK_SERVER = "http://127.0.0.1/testlink/lib/api/xmlrpc/v1/xmlrpc.php"

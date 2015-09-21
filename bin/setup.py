@@ -9,5 +9,5 @@ setup(name='testlink_runner',
         "TestLink-API-Python-client",
         "selenium"
       ],
-      packages=['wrapper', 'tools'],
+      packages=['testlinktool.wrapper', 'testlinktool.tools', 'testlinktool.main'],
      )
