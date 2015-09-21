@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='testlink_runner',
-      version='1.0.0',
+      version='1.0.1',
       description='Unittest wrapper to create interactions between testlink and python tests',
       author='Vade Retro technology',
       url='',
