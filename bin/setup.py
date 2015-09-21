@@ -10,4 +10,9 @@ setup(name='testlink_runner',
         "selenium"
       ],
       packages=['testlinktool.wrapper', 'testlinktool.tools', 'testlinktool.main'],
-     )
+      entry_points={
+          'console_scripts': [
+              'generate_test = testlinktool.main:generate_test',
+              'launch_test = testlinktool.main:lauch_test',
+          ],
+      })
