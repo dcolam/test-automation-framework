@@ -265,7 +265,7 @@ class TestLinkTestLoader(unittest.TestLoader):
     def loadTestsFromModule(self, module, use_load_tests=True):
         """Return a suite of all tests cases contained in the given module"""
         tests = []
-        from wrapper.UITestCase import UITestCase, UITestLinkTestCase
+        from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
         for name in dir(module):
             obj = getattr(module, name)
             if isinstance(obj, type) and issubclass(obj, unittest.TestCase) and obj not in [UITestCase, UITestLinkTestCase]:
@@ -290,7 +290,7 @@ class TestLinkTestLoader(unittest.TestLoader):
 
         The method optionally resolves the names relative to a given module.
         """
-        from wrapper.UITestCase import UITestCase, UITestLinkTestCase
+        from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
         parts = name.split('.')
         if module is None:
             parts_copy = parts[:]
