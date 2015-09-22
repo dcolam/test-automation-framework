@@ -36,8 +36,8 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
         name = "test_" + name
     if not exists(join(dest_dir, name)):
         f = open(join(dest_dir, name), "w")
-        f.write("from wrapper.TestLinkReport import TestLinkTestCase\n"\
-                "from wrapper.UITestCase import UITestLinkTestCase\n\n")
+        f.write("from testlinktool.wrapper.TestLinkReport import TestLinkTestCase\n"\
+                "from testlinktool.wrapper.UITestCase import UITestLinkTestCase\n\n")
     else:
         f = open(join(dest_dir, name), "a")
     
