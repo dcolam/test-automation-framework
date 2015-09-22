@@ -7,7 +7,7 @@ TESTLINK_PROJECT_ID = 1
 TESTLINK_PLATFORM_NAME = "TEST"
 MUST_CREATE_BUILD = True 
 
-def lauch(config_module=None):
+def launch(config_module=None):
     try:
         if config_module is not None:
             TESTLINK_SERVER = getattr(config_module, "TESTLINK_SERVER")
