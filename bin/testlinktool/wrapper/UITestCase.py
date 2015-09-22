@@ -1,7 +1,7 @@
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from wrapper.TestLinkReport import TestLinkTestCase
+from testlinktool.wrapper.TestLinkReport import TestLinkTestCase
 
 class UITestCase(unittest.TestCase):
     driver = None
