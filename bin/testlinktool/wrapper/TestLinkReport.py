@@ -230,7 +230,7 @@ class TestLinkTestCase(unittest.TestCase):
     def populateCustomField(self, testLinkClient, project_id):
         for fieldname in self.customfield_names:
             value = testLinkClient.getTestCaseCustomFieldDesignValue(self.external_id, self.version, project_id, fieldname, "value")
-            self.customfiled_values[fieldname] = value
+            self.customfield_values[fieldname] = value
 
 
 def _cmp(t1 ,t2):
