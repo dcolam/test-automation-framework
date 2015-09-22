@@ -66,12 +66,12 @@ def get_tests(testlink_client, keyword, plan):
         cases = testlink_client.getTestCasesForTestPlan(plan, details="full", keywords=keyword, executiontype=2)
     else:
         cases = testlink_client.getTestCasesForTestPlan(plan, details="full", keywords=keyword, executiontype=2)
-    
+
     temp = cases.values()
     cases = []
-    for t in temp:
-        
-        values = list(t.values())
+    if isinstance(temp, dict): # in case of deepest formating.
+        temp = temp.values()
+    for values in temp:
         for v in values:
             v["keyword"] = keyword
         cases += values
