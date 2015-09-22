@@ -219,7 +219,7 @@ class TestLinkRunner(object):
             
 class TestLinkTestCase(unittest.TestCase):
     customfield_names = []
-    customfiled_values = {}
+    customfield_values = {}
     version = 1
     external_id = "EXT-ID-0"
 
