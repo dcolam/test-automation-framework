@@ -9,13 +9,8 @@ TESTLINK_API_KEY = ""
 TESTLINK_SERVER = "http://127.0.0.1/testlink/lib/api/xmlrpc/v1/xmlrpc.php"
 TESTLINK_PROJECT_ID = 1
 TESTLINK_PROJECT_NAME = "TEST"
-MUST_CREATE_BUILD = True
 UI_TEST_KEYWORD = "UI"
 CUSTOM_FIELD_NAME_LIST = []
-try:
-    from config import *
-except ImportError:
-    print("Warning we are using default parameters")
 
 
 def get_test_names(suite):
@@ -86,7 +81,22 @@ def get_tests(testlink_client, keyword, plan):
     return cases
 
 
-def main():
+def main(config_module=None):
+    try:
+        if config_module is None:
+            try:
+                config_module = __import__("config")
+            except Exception:
+                pass
+        if config_module is not None:
+            TESTLINK_SERVER = getattr(config_module, "TESTLINK_SERVER")
+            TESTLINK_PROJECT_ID = getattr(config_module, "TESTLINK_PROJECT_ID")
+            TESTLINK_PROJECT_NAME = getattr(config_module, "TESTLINK_PROJECT_NAME")
+            TESTLINK_API_KEY = getattr(config_module, "TESTLINK_API_KEY")
+            CUSTOM_FIELD_NAME_LIST = getattr(config_module, "CUSTOM_FIELD_NAME_LIST")
+            UI_TEST_KEYWORD = getattr(config_module, "UI_TEST_KEYWORD")
+    except ImportError:
+        print("Warning we are using default parameters")
     parser = argparse.ArgumentParser(description='')
     group = parser.add_argument_group()
     group.add_argument('-d', '--test-dir', dest='dest_dir',
