@@ -10,7 +10,7 @@ try:
 except NameError:
     def execfile(filename):
         global_namespace = {
-            "__file__": filepath,
+            "__file__": __file__,
             "__name__": "__main__",
         }
         exec(compile(open(filename, "rb").read(), filename, 'exec'), global_namespace)
