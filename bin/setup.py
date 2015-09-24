@@ -13,6 +13,6 @@ setup(name='testlink_runner',
       entry_points={
           'console_scripts': [
               'generate_testlink_test = testlinktool.main.generate_test:main',
-              'launch_testlink_test = testlinktool.main.lauchtestlinktests:main',
+              'launch_testlink_test = testlinktool.main.lauchtestlinktests:launch',
           ],
       })
