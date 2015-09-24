@@ -1,5 +1,7 @@
 from unittest import main, defaultTestLoader
 from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
+from testlinktool.main import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
+                              MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE
 from os import getcwd
 from os.path import exists, join
 try:
@@ -8,16 +10,10 @@ except NameError:
     def execfile(filename):
         exec(compile(open(filename, "rb").read(), filename, 'exec'))
 
-TEST_MODULE = "tests"
-TESTLINK_API_KEY = ""
-TESTLINK_SERVER = "http://127.0.0.1/testlink/lib/api/xmlrpc/v1/xmlrpc.php"
-TESTLINK_PROJECT_ID = 1
-TESTLINK_PLATFORM_NAME = "TEST"
-MUST_CREATE_BUILD = True 
-
 def launch(config_module=None):
     try:
         print(join(getcwd(), 'config.py'))
+        
         if config_module is not None:
             TESTLINK_SERVER = getattr(config_module, "TESTLINK_SERVER")
             TESTLINK_PROJECT_ID = getattr(config_module, "TESTLINK_PROJECT_ID")
