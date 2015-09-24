@@ -4,6 +4,8 @@ from unittest import defaultTestLoader, TestSuite
 import json
 from os.path import exists, join
 from os import mkdir, getcwd
+from testlinktool.main import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PROJECT_NAME,
+                              TESTLINK_API_KEY, CUSTOM_FIELD_NAME_LIST, UI_TEST_KEYWORD
 try:
     execfile
 except NameError:
@@ -79,12 +81,7 @@ def get_tests(testlink_client, keyword, plan):
 
 
 def main(config_module=None):
-    TESTLINK_API_KEY = ""
-    TESTLINK_SERVER = "http://127.0.0.1/testlink/lib/api/xmlrpc/v1/xmlrpc.php"
-    TESTLINK_PROJECT_ID = 1
-    TESTLINK_PROJECT_NAME = "TEST"
-    UI_TEST_KEYWORD = "UI"
-    CUSTOM_FIELD_NAME_LIST = []
+
 
     try:
         
