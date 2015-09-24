@@ -17,6 +17,7 @@ MUST_CREATE_BUILD = True
 
 def launch(config_module=None):
     try:
+        print(join(getcwd(), 'config.py'))
         if config_module is not None:
             TESTLINK_SERVER = getattr(config_module, "TESTLINK_SERVER")
             TESTLINK_PROJECT_ID = getattr(config_module, "TESTLINK_PROJECT_ID")
