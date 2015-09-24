@@ -1,7 +1,7 @@
 from unittest import main, defaultTestLoader
 from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
-from testlinktool.main import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,\
-                              MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE
+from testlinktool.main.config import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,\
+                                     MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE
 from os import getcwd
 from os.path import exists, join
 try:
