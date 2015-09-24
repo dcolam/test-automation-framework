@@ -95,8 +95,8 @@ def main(config_module=None):
             TESTLINK_API_KEY = getattr(config_module, "TESTLINK_API_KEY")
             CUSTOM_FIELD_NAME_LIST = getattr(config_module, "CUSTOM_FIELD_NAME_LIST")
             UI_TEST_KEYWORD = getattr(config_module, "UI_TEST_KEYWORD")
-        elif exists(join(getcwd(), 'config.py'):
-            execfile(join(getcwd(), 'config.py')
+        elif exists(join(getcwd(), 'config.py')):
+            execfile(join(getcwd(), 'config.py'), globals, locals)
     except ImportError:
         print("Warning we are using default parameters")
     parser = argparse.ArgumentParser(description='')
