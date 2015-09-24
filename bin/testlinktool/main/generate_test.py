@@ -98,6 +98,15 @@ def main(config_module=None):
             UI_TEST_KEYWORD = getattr(config_module, "UI_TEST_KEYWORD")
         elif exists(join(getcwd(), 'config.py')):
             execfile(join(getcwd(), 'config.py'))
+        elif exists(join(getcwd(), 'config.json')):
+            with open(join(getcwd(), 'config.json')) as j_file:
+                conf_dic = json_read_file(j_file)
+                TESTLINK_SERVER = conf_dic["TESTLINK_SERVER"]
+                TESTLINK_PROJECT_ID = conf_dic["TESTLINK_PROJECT_ID"]
+                TESTLINK_PROJECT_NAME = conf_dic["TESTLINK_PROJECT_NAME"]
+                TESTLINK_API_KEY = conf_dic["TESTLINK_API_KEY"]
+                CUSTOM_FIELD_NAME_LIST = conf_dic["CUSTOM_FIELD_NAME_LIST"]
+                UI_TEST_KEYWORD = conf_dic["UI_TEST_KEYWORD"]
     except ImportError:
         print("Warning we are using default parameters")
     parser = argparse.ArgumentParser(description='')
