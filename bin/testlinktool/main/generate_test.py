@@ -7,8 +7,8 @@ from os import mkdir, getcwd
 try:
     execfile
 except NameError:
-    def execfile(filename, globals, locals):
-        exec(compile(open(filename, "rb").read(), filename, 'exec'), globals, locals)
+    def execfile(filename):
+        exec(compile(open(filename, "rb").read(), filename, 'exec'))
 
 def get_test_names(suite):
     for t in suite:
@@ -96,7 +96,7 @@ def main(config_module=None):
             CUSTOM_FIELD_NAME_LIST = getattr(config_module, "CUSTOM_FIELD_NAME_LIST")
             UI_TEST_KEYWORD = getattr(config_module, "UI_TEST_KEYWORD")
         elif exists(join(getcwd(), 'config.py')):
-            execfile(join(getcwd(), 'config.py'), globals, locals)
+            execfile(join(getcwd(), 'config.py'))
     except ImportError:
         print("Warning we are using default parameters")
     parser = argparse.ArgumentParser(description='')
