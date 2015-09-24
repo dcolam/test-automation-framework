@@ -3,6 +3,7 @@ from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoad
 
 from os import getcwd
 from os.path import exists, join
+from json import load as json_read_file
 try:
     execfile
 except NameError:
@@ -27,6 +28,15 @@ def launch(config_module=None):
             MUST_CREATE_BUILD = getattr(config_module, "MUST_CREATE_BUILD")
         elif exists(join(getcwd(), 'config.py')):
             execfile(join(getcwd(), 'config.py'))
+        elif exists(join(getcwd(), 'config.json')):
+            with open(join(getcwd(), 'config.json')) as j_file:
+                conf_dic = json_read_file(j_file)
+                TESTLINK_SERVER = conf_dic["TESTLINK_SERVER"]
+                TESTLINK_PROJECT_ID = conf_dic["TESTLINK_PROJECT_ID"]
+                TESTLINK_PLATFORM_NAME = conf_dic["TESTLINK_PLATFORM_NAME"]
+                TESTLINK_API_KEY = conf_dic["TESTLINK_API_KEY"]
+                MUST_CREATE_BUILD = conf_dic["MUST_CREATE_BUILD"]
+
     except ImportError:
         print("Warning we are using default parameters")
     defaultTestLoader = TestLinkTestLoader()
