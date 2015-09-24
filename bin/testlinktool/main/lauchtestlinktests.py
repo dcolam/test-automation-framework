@@ -5,8 +5,8 @@ from os.path import exists, join
 try:
     execfile
 except NameError:
-    def execfile(filename, globals, locals):
-        exec(compile(open(filename, "rb").read(), filename, 'exec'), globals, locals)
+    def execfile(filename):
+        exec(compile(open(filename, "rb").read(), filename, 'exec'))
 
 TEST_MODULE = "tests"
 TESTLINK_API_KEY = ""
@@ -25,7 +25,7 @@ def launch(config_module=None):
             TESTLINK_API_KEY = getattr(config_module, "TESTLINK_API_KEY")
             MUST_CREATE_BUILD = getattr(config_module, "MUST_CREATE_BUILD")
         elif exists(join(getcwd(), 'config.py')):
-            execfile(join(getcwd(), 'config.py'), globals, locals)
+            execfile(join(getcwd(), 'config.py'))
     except ImportError:
         print("Warning we are using default parameters")
     defaultTestLoader = TestLinkTestLoader()
