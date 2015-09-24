@@ -1,5 +1,11 @@
 from unittest import main, defaultTestLoader
 from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
+try:
+    execfile
+except NameError:
+    def execfile(filename, globals, locals):
+        exec(compile(open(filename, "rb").read(), filename, 'exec'), globals, locals)
+
 TEST_MODULE = "tests"
 TESTLINK_API_KEY = ""
 TESTLINK_SERVER = "http://127.0.0.1/testlink/lib/api/xmlrpc/v1/xmlrpc.php"
@@ -15,7 +21,8 @@ def launch(config_module=None):
             TESTLINK_PLATFORM_NAME = getattr(config_module, "TESTLINK_PLATFORM_NAME")
             TESTLINK_API_KEY = getattr(config_module, "TESTLINK_API_KEY")
             MUST_CREATE_BUILD = getattr(config_module, "MUST_CREATE_BUILD")
-            
+        elif exists(join(getcwd(), 'config.py'):
+            execfile(join(getcwd(), 'config.py')
     except ImportError:
         print("Warning we are using default parameters")
     defaultTestLoader = TestLinkTestLoader()
