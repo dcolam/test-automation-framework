@@ -7,7 +7,11 @@ try:
     execfile
 except NameError:
     def execfile(filename):
-        exec(compile(open(filename, "rb").read(), filename, 'exec'))
+        global_namespace = {
+            "__file__": filepath,
+            "__name__": "__main__",
+        }
+        exec(compile(open(filename, "rb").read(), filename, 'exec'), global_namespace)
 
 def launch(config_module=None):
     try:
