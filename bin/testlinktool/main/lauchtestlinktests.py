@@ -1,5 +1,7 @@
 from unittest import main, defaultTestLoader
 from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
+from os import getcwd
+from os.path import exists, join
 try:
     execfile
 except NameError:
