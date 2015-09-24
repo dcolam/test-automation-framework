@@ -4,8 +4,8 @@ from unittest import defaultTestLoader, TestSuite
 import json
 from os.path import exists, join
 from os import mkdir, getcwd
-from testlinktool.main import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PROJECT_NAME,\
-                              TESTLINK_API_KEY, CUSTOM_FIELD_NAME_LIST, UI_TEST_KEYWORD
+from testlinktool.main.config import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PROJECT_NAME,\
+                                     TESTLINK_API_KEY, CUSTOM_FIELD_NAME_LIST, UI_TEST_KEYWORD
 try:
     execfile
 except NameError:
