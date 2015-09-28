@@ -6,6 +6,7 @@ from testlinktool.wrapper.TestLinkReport import TestLinkTestCase
 class UITestCase(unittest.TestCase):
     driver = None
     local = True
+    maximize_window = True
     remote_server = "" 
 
     def run_test_on_current_browser(self):
@@ -24,6 +25,8 @@ class UITestCase(unittest.TestCase):
                     desired_capabilities=DesiredCapabilities.CHROME)
         except Exception:
             self.skipTest("No chrome web driver in your PATH")
+        if self.maximize_window:
+            self.driver.maximize_window()
         self.run_test_on_current_browser()
     
     def testFirefox(self):
