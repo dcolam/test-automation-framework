@@ -119,7 +119,7 @@ class MailBuilder():
         return self
     
     def with_plain_text_part(self, text):
-        txt_part = MIMEText(html_code, "plan")
+        txt_part = MIMEText(text, "plan")
         if not self._current:
             self._current = txt_part
         elif not isinstance(self._current, MIMEMultipart):
