@@ -21,10 +21,10 @@ class SMTPTester():
                             shell=True).decode("ascii")
         
     def _get_mail_has_failed(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + 'grep ' + mail_id +' /var/log/mail.log | grep "status=def" | tail -n 1', shell=True).decode("ascii") != ''
+        return check_result("ssh sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=def" | tail -n 1', shell=True).decode("ascii") != ''
 
     def _get_mail_has_success(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + 'grep ' + mail_id +' /var/log/mail.log | grep "status=sent" | tail -n 1', shell=True).decode("ascii") != ''
+        return check_result("ssh sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=sent" | tail -n 1', shell=True).decode("ascii") != ''
 
     def _connection(self, **kwargs):
         try:
