@@ -49,8 +49,8 @@ class SMTPTester():
         params["msg"] = message
         try:
             self._connection(**params)
-            m_id = self._get_log_mail(param["mx"])
-            return (self._get_mail_has_success(param['mx'], m_id), "Message sent")
+            m_id = self._get_log_mail(params["mx"])
+            return (self._get_mail_has_success(params['mx'], m_id), "Message sent")
         except SMTPTesterConnectionError:
             return (False, "Cannot connect to mail server {} at port {}".format(params["mx"], params["port"]))
         except SMTPException as e:
