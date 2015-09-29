@@ -32,7 +32,7 @@ class SMTPTester():
             return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=sent"',
                                 shell=True).decode("ascii") != ''
         except:
-            return false
+            return False
 
     def _connection(self, **kwargs):
         try:
