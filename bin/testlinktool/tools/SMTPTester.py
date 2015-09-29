@@ -42,7 +42,7 @@ class SMTPTester():
         finally:
             server.close()
     
-    def sendMessageMustSucceed(message, **kwargs):
+    def sendMessageMustSucceed(self, message, **kwargs):
         params = {}
         for key, value in self._default_keys:
             params[key] = kwargs.get(key, value)
@@ -56,7 +56,7 @@ class SMTPTester():
         except SMTPException as e:
             return (False, "Message was not delivered due to an error " + str(e))
     
-    def sendMessageMustBeRejected(message, **kwargs):
+    def sendMessageMustBeRejected(self, message, **kwargs):
         params = {}
         for key, value in self._default_keys:
             params[key] = kwargs.get(key, value)
