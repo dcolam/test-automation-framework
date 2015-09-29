@@ -21,10 +21,10 @@ class SMTPTester():
                             shell=True).decode("ascii")
         
     def _get_mail_has_failed(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + 'grep ' + mail_id +' /var/log/mail.log | grep status=def | tail -n 1', shell=True).decode("ascii") != ''
+        return check_result("ssh sysadmin@" + server + 'grep ' + mail_id +' /var/log/mail.log | grep "status=def" | tail -n 1', shell=True).decode("ascii") != ''
 
     def _get_mail_has_success(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + 'grep ' + mail_id +' /var/log/mail.log | grep status=sent | tail -n 1', shell=True).decode("ascii") != ''
+        return check_result("ssh sysadmin@" + server + 'grep ' + mail_id +' /var/log/mail.log | grep "status=sent" | tail -n 1', shell=True).decode("ascii") != ''
 
     def _connection(self, **kwargs):
         try:
@@ -48,14 +48,15 @@ class SMTPTester():
         for key, value in self._default_keys.items():
             params[key] = kwargs.get(key, value)
         params["msg"] = message
+        m_id = ""
         try:
             self._connection(**params)
             m_id = self._get_log_mail(params["mx"])
-            return (self._get_mail_has_success(params['mx'], m_id), "Message sent")
+            return (self._get_mail_has_success(params['mx'], m_id), "Message sent:"+m_id)
         except SMTPTesterConnectionError:
             return (False, "Cannot connect to mail server {} at port {}".format(params["mx"], params["port"]))
         except SMTPException as e:
-            return (False, "Message was not delivered due to an error " + str(e))
+            return (False, "Message " + m_id + " was not delivered due to an error " + str(e))
     
     def sendMessageMustBeRejected(self, message, **kwargs):
         params = {}
