@@ -3,7 +3,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
-from subprocess import check_result
+from subprocess import check_routput as check_result
 
 class SMTPTesterConnectionError(RuntimeError):
     pass
@@ -20,10 +20,10 @@ class SMTPTester():
         return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | cut -d " " -f 6|cut -d ":" -f 1| grep [0-9A-Z]{11}| tail -n 1')
         
     def _get_mail_has_failed(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=def ' + mail_id +'| tail -n 1') != ''
+        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=def ' + mail_id +'| tail -n 1', shell=True) != ''
 
     def _get_mail_has_success(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=sent ' + mail_id +'| tail -n 1') != ''
+        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=sent ' + mail_id +'| tail -n 1', shell=True) != ''
 
     def _connection(self, **kwargs):
         try:
