@@ -3,7 +3,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
-from subprocess import check_routput as check_result
+from subprocess import check_output as check_result
 
 class SMTPTesterConnectionError(RuntimeError):
     pass
