@@ -26,6 +26,7 @@ def launch(config_module=None):
             TESTLINK_PLATFORM_NAME = getattr(config_module, "TESTLINK_PLATFORM_NAME")
             TESTLINK_API_KEY = getattr(config_module, "TESTLINK_API_KEY")
             MUST_CREATE_BUILD = getattr(config_module, "MUST_CREATE_BUILD")
+            TEST_MODULE = getattr(config_module, "TEST_MODULE")
         elif exists(join(getcwd(), 'config.py')):
             execfile(join(getcwd(), 'config.py'))
         elif exists(join(getcwd(), 'config.json')):
@@ -36,6 +37,7 @@ def launch(config_module=None):
                 TESTLINK_PLATFORM_NAME = conf_dic["TESTLINK_PLATFORM_NAME"]
                 TESTLINK_API_KEY = conf_dic["TESTLINK_API_KEY"]
                 MUST_CREATE_BUILD = conf_dic["MUST_CREATE_BUILD"]
+                TEST_MODULE = conf_dic["TEST_MODULE"]
 
     except ImportError:
         print("Warning we are using default parameters")
