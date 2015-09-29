@@ -3,6 +3,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
+from subprocess import check_result
 
 class SMTPTesterConnectionError(RuntimeError):
     pass
@@ -15,6 +16,15 @@ class SMTPTester():
         "to": "test@test.org",
         "from": "test@test.org"}
 
+    def _get_log_mail(self, server):
+        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | cut -d " " -f 6|cut -d ":" -f 1| grep [0-9A-Z]{11}| tail -n 1')
+        
+    def _get_mail_has_failed(self, server, mail_id):
+        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=def ' + mail_id +'| tail -n 1') != ''
+
+    def _get_mail_has_success(self, server, mail_id):
+        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=sent ' + mail_id +'| tail -n 1') != ''
+
     def _connection(self, **kwargs):
         try:
             server = SMTP(kwargs["mx"], kwargs["port"])
@@ -23,7 +33,10 @@ class SMTPTester():
         try:
             if not isinstance(kwargs["to"], list):
                 kwargs["to"] = [kwargs["to"]]
-            server.sendmail(kwargs["from"], kwargs["to"], kwargs["msg"].as_string())
+            result = server.sendmail(kwargs["from"], kwargs["to"], kwargs["msg"].as_string())
+            if result != {}:
+                raise SMTPException()
+            
         except SMTPException:
             raise
         finally:
@@ -36,7 +49,8 @@ class SMTPTester():
         params["msg"] = message
         try:
             self._connection(**params)
-            return (True, "Message sent")
+            m_id = self._get_log_mail(param["mx"])
+            return (self._get_mail_has_success(param['mx'], m_id), "Message sent")
         except SMTPTesterConnectionError:
             return (False, "Cannot connect to mail server {} at port {}".format(params["mx"], params["port"]))
         except SMTPException as e:
@@ -49,7 +63,8 @@ class SMTPTester():
         params["msg"] = message
         try:
             self._connection(**params)
-            return (False, "Message sent, error was expected")
+            m_id = self._get_log_mail(param["mx"])
+            return (self._get_mail_has_failed(param["mx"], m_id), "Message sent, error was expected")
         except SMTPTesterConnectionError:
             return (False, "Cannot connect to mail server {} at port {}".format(params["mx"], params["port"]))
         except SMTPException as e:
@@ -102,6 +117,23 @@ class MailBuilder():
         else:
             self._current.attach(html_part)
         return self
+    
+    def with_plain_text_part(self, text):
+        txt_part = MIMEText(html_code, "plan")
+        if not self._current:
+            self._current = txt_part
+        elif not isinstance(self._current, MIMEMultipart):
+            temp = self._current
+            self._current = MIMEMultipart(Subject=temp["Subject"],
+                                          To=temp["To"],
+                                          From=temp["From"],
+                                          Date=temp["Date"])
+            self._current.attach(temp)
+            self._current.attach(txt_part)
+        else:
+            self._current.attach(txt_part)
+        return self
+    
     
     def __str__(self):
         return self.build().as_string()
