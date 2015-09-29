@@ -44,7 +44,7 @@ class SMTPTester():
     
     def sendMessageMustSucceed(self, message, **kwargs):
         params = {}
-        for key, value in self._default_keys:
+        for key, value in self._default_keys.items():
             params[key] = kwargs.get(key, value)
         params["msg"] = message
         try:
@@ -58,7 +58,7 @@ class SMTPTester():
     
     def sendMessageMustBeRejected(self, message, **kwargs):
         params = {}
-        for key, value in self._default_keys:
+        for key, value in self._default_keys.items():
             params[key] = kwargs.get(key, value)
         params["msg"] = message
         try:
