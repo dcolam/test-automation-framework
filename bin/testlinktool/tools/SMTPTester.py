@@ -21,10 +21,12 @@ class SMTPTester():
                             shell=True).decode("ascii")
         
     def _get_mail_has_failed(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=def"', shell=True).decode("ascii") != ''
+        return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=def"',
+                            hell=True).decode("ascii") != ''
 
     def _get_mail_has_success(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=sent"', shell=True).decode("ascii") != ''
+        return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=sent"',
+                            shell=True).decode("ascii") != ''
 
     def _connection(self, **kwargs):
         try:
@@ -51,7 +53,7 @@ class SMTPTester():
         m_id = ""
         try:
             self._connection(**params)
-            m_id = self._get_log_mail(params["mx"])
+            m_id = self._get_log_mail(params["mx"]).strip()
             return (self._get_mail_has_success(params['mx'], m_id), "Message sent:"+m_id)
         except SMTPTesterConnectionError:
             return (False, "Cannot connect to mail server {} at port {}".format(params["mx"], params["port"]))
@@ -65,7 +67,7 @@ class SMTPTester():
         params["msg"] = message
         try:
             self._connection(**params)
-            m_id = self._get_log_mail(param["mx"])
+            m_id = self._get_log_mail(param["mx"]).strip()
             return (self._get_mail_has_failed(param["mx"], m_id), "Message sent, error was expected")
         except SMTPTesterConnectionError:
             return (False, "Cannot connect to mail server {} at port {}".format(params["mx"], params["port"]))
