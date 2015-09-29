@@ -17,13 +17,13 @@ class SMTPTester():
         "from": "test@test.org"}
 
     def _get_log_mail(self, server):
-        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | cut -d " " -f 6|cut -d ":" -f 1| grep [0-9A-Z]{11}| tail -n 1')
+        return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' cat /var/log/mail.log | cut -d " " -f 6|cut -d ":" -f 1| egrep [0-9A-Z]{10}| tail -n 1')
         
     def _get_mail_has_failed(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=def ' + mail_id +'| tail -n 1', shell=True) != ''
+        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | egrep status=def ' + mail_id +'| tail -n 1', shell=True) != ''
 
     def _get_mail_has_success(self, server, mail_id):
-        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | grep status=sent ' + mail_id +'| tail -n 1', shell=True) != ''
+        return check_result("ssh sysadmin@" + server + ' cat /var/log/mail.log | egrep status=sent ' + mail_id +'| tail -n 1', shell=True) != ''
 
     def _connection(self, **kwargs):
         try:
