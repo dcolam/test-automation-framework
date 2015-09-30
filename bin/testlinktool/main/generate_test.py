@@ -58,25 +58,29 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
         f.write("    @classmethod\n"\
                 "    def get_plan_name(cls):\n"\
                 "        return '{}'\n\n".format(plan))
-        preconditions = test_data['preconditions'].replace('</p>' ,"").strip("<p>")
-        is_all_function = all([" " not in p.strip().replace(", ") for p in preconditions])
+        preconditions = test_data.get('preconditions', '').replace('</p>', "").replace("\n", "\n        ").split("<p>")
+        is_all_function = preconditions and all([" " not in p.strip().replace(", ", '') for p in preconditions if p.strip() != ''])
         if is_ui:
             f.write("    def run_test_on_current_browser(self):\n" +
                     '        """{}\n        """\n'.format(test_data['summary'].strip().replace("\n", "\n        ")) +
                     "        pass\n\n")
 
-            f.write("    def setUpUi(self):\n")
-            if not is_all_function:
+
+            if not is_all_function and preconditions:
+                f.write("    def setUpUi(self):\n")
                 f.write('        """{}"""\n        pass\n'.format("\n        ".join(preconditions)))
-            else:
+            elif preconditions:
+                f.write("    def setUpUi(self):\n")
                 preconditions = [p.strip().replace('driver', 'self.driver') for p in preconditions]
-                f.write('    {}\n\n'.format("        \n".join(preconditions)))
+                f.write('    {}\n\n'.format("\n        ".join(preconditions)))
         else:
-            f.write("    def setUp(self):\n")
-            if not is_all_function:
-                f.write('        """{}"""\n        pass\n'.format("\n        ".join(preconditions)))
+
+            if not is_all_function and preconditions:
+                f.write("    def setUp(self):\n")
+                f.write('        """{}\n        """\n        pass\n'.format("\n        ".join(preconditions)))
             else:
-                f.write('    {}\n\n'.format("        \n".join(preconditions)))
+                f.write("    def setUp(self):\n")
+                f.write('    {}\n\n'.format("\n        ".join(preconditions)))
             if len(test_data['steps']) == 0:
                 f.write("    def testStep0(self):\n" +
                         '        """some test\n'\
