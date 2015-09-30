@@ -86,6 +86,7 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
                             '            {}"""\n'.format(step["actions"].strip().replace("\n", "\n        "),
                                                          step["expected_results"].strip().replace("\n", "\n        "))+
                             "        pass\n\n")
+        f.write("\n")
     except Exception:
         pass
     finally:
