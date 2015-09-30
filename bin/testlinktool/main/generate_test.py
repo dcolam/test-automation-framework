@@ -25,6 +25,15 @@ def get_test_names(suite):
 
 
 def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
+    """generate the test structuyre
+
+    :param test_data:
+    :param dest_dir:
+    :param is_ui:
+    :param plan:
+    :param verbose:
+    :return:
+    """
     if not exists(dest_dir):
         mkdir(dest_dir)
     # must have "test" in name because unittest explore by fetching this word
@@ -37,25 +46,42 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
                 "from testlinktool.wrapper.UITestCase import UITestLinkTestCase\n\n")
     else:
         f = open(join(dest_dir, name), "a")
-    
-    f.write("\n")
-    if is_ui:
-        f.write("class {}(UITestLinkTestCase):\n".format(test_data["tcase_name"]))
-    else:
-        f.write("class {}(TestLinkTestCase):\n".format(test_data["tcase_name"]))
-    f.write("    external_id = '{}'\n".format(test_data["full_external_id"]))
-    f.write("    version = {}\n".format(test_data["version"]))
-    f.write("    customfield_names = [{}]\n".format(",".join(['"' + name + '"' for name, _ in test_data["custom_fields"].items() if _["value"] != ""])))
-    f.write("    @classmethod\n"\
-            "    def get_plan_name(cls):\n"\
-            "        return '{}'\n".format(plan))
-    
-    if is_ui:
-        f.write("    def run_test_on_current_browser(self):\n" +
-                '        """{}\n        """\n'.format(test_data['summary'].strip().replace("\n", "\n        ")) +
-                "        pass\n")
-    
-    f.close()
+    try:
+        f.write("\n")
+        if is_ui:
+            f.write("class {}(UITestLinkTestCase):\n".format(test_data["tcase_name"]))
+        else:
+            f.write("class {}(TestLinkTestCase):\n".format(test_data["tcase_name"]))
+        f.write("    external_id = '{}'\n".format(test_data["full_external_id"]))
+        f.write("    version = {}\n".format(test_data["version"]))
+        f.write("    customfield_names = [{}]\n".format(",".join(['"' + name + '"' for name, _ in test_data["custom_fields"].items() if _["value"] != ""])))
+        f.write("    @classmethod\n"\
+                "    def get_plan_name(cls):\n"\
+                "        return '{}'\n".format(plan))
+
+        if is_ui:
+            f.write("    def run_test_on_current_browser(self):\n" +
+                    '        """{}\n        """\n'.format(test_data['summary'].strip().replace("\n", "\n        ")) +
+                    "        pass\n")
+        else:
+            if len(test_data['steps']) == 0:
+                f.write("    def testStep0(self):\n" +
+                        '        """some test\n'\
+                        '            expected:\n'\
+                        '            Unknown"""\n'+
+                        "        pass\n\n")
+            else:
+                for i, step in enumerate(test_data['steps']):
+                    f.write("    def testStep{}(self):\n".format(i) +
+                            '        """{}\n'\
+                            '            expected:\n'\
+                            '            {}"""\n'.format(step["actions"].strip().replace("\n", "\n        "),
+                                                         step["expected_results"].strip().replace("\n", "\n        "))+
+                            "        pass\n\n")
+    except Exception:
+        pass
+    finally:
+        f.close()
 
 
 def get_tests(testlink_client, keyword, plan, TESTLINK_PROJECT_ID, CUSTOM_FIELD_NAME_LIST):
