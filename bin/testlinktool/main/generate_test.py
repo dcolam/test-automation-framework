@@ -58,7 +58,7 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
     f.close()
 
 
-def get_tests(testlink_client, keyword, plan):
+def get_tests(testlink_client, keyword, plan, CUSTOM_FIELD_NAME_LIST):
     if keyword:
         cases = testlink_client.getTestCasesForTestPlan(plan, details="full", keywords=keyword, executiontype=2)
     else:
@@ -130,9 +130,9 @@ def main(config_module=None):
         suite["id"]: suite["name"] for suite in suites
     }
     
-    cases = get_tests(testlink_client, UI_TEST_KEYWORD, plan_id)
+    cases = get_tests(testlink_client, UI_TEST_KEYWORD, plan_id, CUSTOM_FIELD_NAME_LIST)
     names = [n["tcase_name"] for n in cases]
-    other_cases = get_tests(testlink_client, None, plan_id)
+    other_cases = get_tests(testlink_client, None, plan_id, CUSTOM_FIELD_NAME_LIST)
     cases += [n for n in other_cases if n["tcase_name"] not in names]
     for case in cases:
         case["suite"] = suites_tc_dic[case["testsuite_id"]]
