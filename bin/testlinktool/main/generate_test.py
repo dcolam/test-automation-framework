@@ -54,10 +54,10 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
             f.write("class {}(TestLinkTestCase):\n".format(test_data["tcase_name"]))
         f.write("    external_id = '{}'\n".format(test_data["full_external_id"]))
         f.write("    version = {}\n".format(test_data["version"]))
-        f.write("    customfield_names = [{}]\n".format(",".join(['"' + name + '"' for name, _ in test_data["custom_fields"].items() if _["value"] != ""])))
+        f.write("    customfield_names = [{}]\n\n".format(",".join(['"' + name + '"' for name, _ in test_data["custom_fields"].items() if _["value"] != ""])))
         f.write("    @classmethod\n"\
                 "    def get_plan_name(cls):\n"\
-                "        return '{}'\n".format(plan))
+                "        return '{}'\n\n".format(plan))
         preconditions = test_data['preconditions'].replace('</p>' ,"").strip("<p>")
         is_all_function = all([" " not in p.strip().replace(", ") for p in preconditions])
         if is_ui:
@@ -70,8 +70,13 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
                 f.write('        """{}"""\n        pass\n'.format("\n        ".join(preconditions)))
             else:
                 preconditions = [p.strip().replace('driver', 'self.driver') for p in preconditions]
-                f.write('    {}\n'.format("        \n".join(preconditions)))
+                f.write('    {}\n\n'.format("        \n".join(preconditions)))
         else:
+            f.write("    def setUp(self):\n")
+            if not is_all_function:
+                f.write('        """{}"""\n        pass\n'.format("\n        ".join(preconditions)))
+            else:
+                f.write('    {}\n\n'.format("        \n".join(preconditions)))
             if len(test_data['steps']) == 0:
                 f.write("    def testStep0(self):\n" +
                         '        """some test\n'\
