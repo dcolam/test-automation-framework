@@ -15,6 +15,12 @@ class UITestCase(unittest.TestCase):
         """
         pass
 
+    def setUpUi(self):
+        """
+        this method is called after driver is intialized to create preconditions
+        """
+        pass
+
     def testChrome(self):
         try:
             if self.local:
@@ -27,6 +33,7 @@ class UITestCase(unittest.TestCase):
             self.skipTest("No chrome web driver in your PATH")
         if self.maximize_window:
             self.driver.maximize_window()
+        self.setUpUi()
         self.run_test_on_current_browser()
     
     def testFirefox(self):
