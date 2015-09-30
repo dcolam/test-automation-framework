@@ -58,11 +58,19 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
         f.write("    @classmethod\n"\
                 "    def get_plan_name(cls):\n"\
                 "        return '{}'\n".format(plan))
-
+        preconditions = test_data['preconditions'].replace('</p>' ,"").strip("<p>")
+        is_all_function = all([" " not in p.strip().replace(", ") for p in preconditions])
         if is_ui:
             f.write("    def run_test_on_current_browser(self):\n" +
                     '        """{}\n        """\n'.format(test_data['summary'].strip().replace("\n", "\n        ")) +
-                    "        pass\n")
+                    "        pass\n\n")
+
+            f.write("    def setUpUi(self):\n")
+            if not is_all_function:
+                f.write('        """{}"""\n        pass\n'.format("\n        ".join(preconditions)))
+            else:
+                preconditions = [p.strip().replace('driver', 'self.driver') for p in preconditions]
+                f.write('    {}\n'.format("        \n".join(preconditions)))
         else:
             if len(test_data['steps']) == 0:
                 f.write("    def testStep0(self):\n" +
