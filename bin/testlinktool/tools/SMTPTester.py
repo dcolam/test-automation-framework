@@ -23,7 +23,7 @@ class SMTPTester():
     def _get_mail_has_failed(self, server, mail_id):
         try:
             return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=def"',
-                            hell=True).decode("ascii") != ''
+                                shell=True).decode("ascii") != ''
         except Exception:
             return False
 
