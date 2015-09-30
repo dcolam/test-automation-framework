@@ -58,7 +58,7 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
     f.close()
 
 
-def get_tests(testlink_client, keyword, plan, CUSTOM_FIELD_NAME_LIST):
+def get_tests(testlink_client, keyword, plan, TESTLINK_PROJECT_ID, CUSTOM_FIELD_NAME_LIST):
     if keyword:
         cases = testlink_client.getTestCasesForTestPlan(plan, details="full", keywords=keyword, executiontype=2)
     else:
@@ -114,14 +114,14 @@ def main(config_module=None):
     group.add_argument('-d', '--test-dir', dest='dest_dir',
                        help="The directory path where generated tests will be sent (defaults to 'tests')",
                        default="tests")
-    group.add_argument('-p', '--plan', dest='plan', help="the test plan", default=None)
+    group.add_argument('-p', '--plan', dest='plan', help="the test plan", default=None, required=True)
     group.add_argument('-a', '--download-all', dest='download_all', default=False, action="store_true",
                        help="if used will download all tests, even those which are already coded")
     group.add_argument('-v', '--verbose', dest='verbose', default=False, action="store_true",
                        help="verbosity")
     
     args = parser.parse_args()
-    
+
     tl_helper = TestLinkHelper(TESTLINK_SERVER, TESTLINK_API_KEY)
     testlink_client = tl_helper.connect(TestlinkAPIClient)
     plan_id = int(testlink_client.getTestPlanByName(TESTLINK_PROJECT_NAME, args.plan)[0]['id'])
@@ -130,9 +130,9 @@ def main(config_module=None):
         suite["id"]: suite["name"] for suite in suites
     }
     
-    cases = get_tests(testlink_client, UI_TEST_KEYWORD, plan_id, CUSTOM_FIELD_NAME_LIST)
+    cases = get_tests(testlink_client, UI_TEST_KEYWORD, plan_id, TESTLINK_PROJECT_ID, CUSTOM_FIELD_NAME_LIST)
     names = [n["tcase_name"] for n in cases]
-    other_cases = get_tests(testlink_client, None, plan_id, CUSTOM_FIELD_NAME_LIST)
+    other_cases = get_tests(testlink_client, None, plan_id, TESTLINK_PROJECT_ID, CUSTOM_FIELD_NAME_LIST)
     cases += [n for n in other_cases if n["tcase_name"] not in names]
     for case in cases:
         case["suite"] = suites_tc_dic[case["testsuite_id"]]
