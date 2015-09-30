@@ -1,7 +1,7 @@
 import argparse
 from testlink import TestlinkAPIClient, TestLinkHelper
 from unittest import defaultTestLoader, TestSuite
-import json
+from json import load as json_read_file
 from os.path import exists, join
 from os import mkdir, getcwd
 
