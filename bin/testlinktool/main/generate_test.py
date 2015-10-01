@@ -15,6 +15,7 @@ except NameError:
         }
         exec(compile(open(filename, "rb").read(), filename, 'exec'), global_namespace)
 
+
 def get_test_names(suite):
     for t in suite:
         if isinstance(t, TestSuite):
@@ -22,6 +23,33 @@ def get_test_names(suite):
                 yield i
         else:
             yield t.__class__.__name__
+
+
+def __is_a_functions(precondition):
+    states = {
+        "NAME":
+          {
+              "(": "ARGS",
+              " ": "BAD",
+              ")": "BAD"
+          },
+        "ARGS":
+            {
+                "(": "TUPLE",
+                ")": "NAME",
+            },
+            "TUPLE":{
+                ")": "ARGS"
+            }
+    }
+    curr_state = "NAME"
+    for char in precondition.strip():
+        if curr_state == "BAD":
+            return False
+        if char in states[curr_state]:
+            curr_state = states[curr_state][char]
+    return curr_state == "NAME"
+
 
 
 def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
@@ -59,7 +87,7 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
                 "    def get_plan_name(cls):\n"\
                 "        return '{}'\n\n".format(plan))
         preconditions = test_data.get('preconditions', '').replace('</p>', "").replace("\n", "\n        ").split("<p>")
-        is_all_function = preconditions and all([" " not in p.strip().replace(", ", '') for p in preconditions if p.strip() != ''])
+        is_all_function = preconditions and all([__is_a_functions(p) for p in preconditions if p.strip() != ''])
         if is_ui:
             f.write("    def run_test_on_current_browser(self):\n" +
                     '        """{}\n        """\n'.format(test_data['summary'].strip().replace("\n", "\n        ")) +
