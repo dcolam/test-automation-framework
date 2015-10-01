@@ -86,7 +86,7 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
         f.write("    @classmethod\n"\
                 "    def get_plan_name(cls):\n"\
                 "        return '{}'\n\n".format(plan))
-        preconditions = test_data.get('preconditions', '').replace('</p>', "").replace("\n", "\n        ").split("<p>")
+        preconditions = test_data.get('preconditions', '').replace('</p>', "").replace("\n", "\n        ").replace('&quot;', "'").split("<p>")
         is_all_function = preconditions and all([__is_a_functions(p) for p in preconditions if p.strip() != ''])
         if is_ui:
             f.write("    def run_test_on_current_browser(self):\n" +
