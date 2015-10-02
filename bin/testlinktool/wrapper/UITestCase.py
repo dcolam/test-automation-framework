@@ -48,6 +48,7 @@ class UITestCase(unittest.TestCase):
             self.skipTest("No firefox web driver in your PATH")
         if self.maximize_window:
             self.driver.maximize_window()
+        self.setUpUi()
         self.run_test_on_current_browser()
     
     def tearDown(self):
