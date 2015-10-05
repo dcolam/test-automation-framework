@@ -121,8 +121,12 @@ class UITestCase(unittest.TestCase):
         :param new_value:
         :return:
         """
-        ActionChains(self.driver).key_down(Keys.CONTROL, element).send_keys('a').key_up(Keys.CONTROL).perform()
+        element.click()
+        ActionChains(self.driver).key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).perform()
         element.send_keys(Keys.DELETE)
+        if element.get_attribute("value") != "":
+            element.double_click()
+            element.send_keys(Keys.DELETE)
         if not isinstance(new_value, str):
             new_value = str(new_value)
         element.send_keys(new_value)
