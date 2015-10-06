@@ -110,9 +110,18 @@ class UITestCase(unittest.TestCase):
             element = WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located((locator, rule))
             )
-            return element is not None
+            return element is None
         except TimeoutException:
             return True
+
+    def assertElementDoesNotAppearAfterWaiting(self, locator, rule, timeout):
+        self.assertTrue(self.element_does_not_appear_after_waiting(locator, rule, timeout))
+
+    def assertElementAppearAfterWaiting(self, locator, rule, timeout):
+        self.assertFalse(self.element_does_not_appear_after_waiting(locator, rule, timeout))
+
+    def assertElementIsPresent(self, locator, rule):
+        self.assertFalse(self.element_does_not_appear(locator, rule))
 
     def erase_then_put(self, element, new_value):
         """Erase element content then write it the wanted value
