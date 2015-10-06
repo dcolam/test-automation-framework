@@ -167,6 +167,49 @@ class UITestCase(unittest.TestCase):
         if value is not None:
             select.select_by_value(value)
 
+    def assertNotChecked(self, locator, rule, timeout=-1):
+        try:
+            if timeout > 0:
+                element = WebDriverWait(self.driver, timeout).until(
+                        EC.element_to_be_clickable((locator, rule))
+                )
+            else:
+                element = self.driver.find_element(locator, rule)
+        except (NoSuchElementException, TimeoutException) as e:
+            raise self.failureException(str(e))
+        self.assertFalse(element.is_selected())
+
+    def assertChecked(self, locator, rule, timeout=-1):
+        try:
+            if timeout > 0:
+                element = WebDriverWait(self.driver, timeout).until(
+                        EC.element_to_be_clickable((locator, rule))
+                )
+            else:
+                element = self.driver.find_element(locator, rule)
+        except (NoSuchElementException, TimeoutException) as e:
+            raise self.failureException(str(e))
+        self.assertTrue(element.is_selected())
+
+    def assertHasValue(self, locator, rule, value, timeout=-1, exact=True, case_sensitive=True):
+        try:
+            if timeout > 0:
+                element = WebDriverWait(self.driver, timeout).until(
+                        EC.element_to_be_clickable((locator, rule))
+                )
+            else:
+                element = self.driver.find_element(locator, rule)
+        except (NoSuchElementException, TimeoutException) as e:
+            raise self.failureException(str(e))
+        element_value = element.get_attribute("value")
+        if not case_sensitive:
+            value = value.lower()
+            element_value = element_value.lower()
+        if exact:
+            self.assertEqual(element_value, value)
+        else:
+            self.assertIn(value, element_value)
+
     def tearDown(self):
         if self.driver:
             self.driver.close()
