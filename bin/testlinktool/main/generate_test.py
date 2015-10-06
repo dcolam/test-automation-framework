@@ -86,7 +86,10 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
         f.write("    @classmethod\n"\
                 "    def get_plan_name(cls):\n"\
                 "        return '{}'\n\n".format(plan))
-        preconditions = test_data.get('preconditions', '').replace('</p>', "").replace("\n", "\n        ").replace('&quot;', "'").split("<p>")
+        preconditions = test_data.get('preconditions', '').replace('</p>', "")\
+            .replace("\n", "\n        ")\
+            .replace('&#39;', "'")\
+            .replace('&quot;', "'").split("<p>")
         is_all_function = preconditions and all([__is_a_functions(p) for p in preconditions if p.strip() != ''])
         if is_ui:
             f.write("    def run_test_on_current_browser(self):\n" +
@@ -140,10 +143,16 @@ def get_tests(testlink_client, keyword, plan, TESTLINK_PROJECT_ID, CUSTOM_FIELD_
     cases = []
     if isinstance(temp, dict): # in case of deepest formating.
         temp = temp.values()
-    for values in temp:
+    for values in list(temp):
         for v in values:
-            v["keyword"] = keyword
-        cases += values
+            if not isinstance(v, dict):
+                used = values[v]
+            else:
+                used = v
+
+            used["keyword"] = keyword
+            cases.append(used)
+
     for test in cases:
         test.update(testlink_client.getTestCase(testcaseid=test["tc_id"])[0])
         test["custom_fields"] = {}
