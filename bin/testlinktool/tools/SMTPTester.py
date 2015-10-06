@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 from subprocess import check_output as check_result
+from email import message_from_binary_file
 
 class SMTPTesterConnectionError(RuntimeError):
     pass
@@ -17,7 +18,7 @@ class SMTPTester():
         "from": "test@test.org"}
 
     def _get_log_mail(self, server):
-        return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' cat /var/log/mail.log | cut -d " " -f 6|cut -d ":" -f 1| egrep [0-9A-Z]{10}| tail -n 1',
+        return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' cat /var/log/mail.log | cut -d " " -f 7|cut -d ":" -f 1| egrep [0-9A-Z]{10}| tail -n 1',
                             shell=True).decode("ascii")
         
     def _get_mail_has_failed(self, server, mail_id):
@@ -29,6 +30,7 @@ class SMTPTester():
 
     def _get_mail_has_success(self, server, mail_id):
         try:
+            print("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=sent"')
             return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' grep ' + mail_id +' /var/log/mail.log | grep "status=sent"',
                                 shell=True).decode("ascii") != ''
         except:
@@ -81,9 +83,10 @@ class SMTPTester():
             return (True, "Message was rejected as expected " + str(e))
 
 
-class MailBuilder():
+class MailBuilder:
     
     _current = None
+    must_replace = True
     
     def add_attachment(self, byte_stream, attachement_name):
         if not self._current or not isinstance(self.current, MIMEMultipart):
@@ -118,12 +121,17 @@ class MailBuilder():
             self._current = html_part
         elif not isinstance(self._current, MIMEMultipart):
             temp = self._current
-            self._current = MIMEMultipart(Subject=temp["Subject"],
-                                          To=temp["To"],
-                                          From=temp["From"],
-                                          Date=temp["Date"])
-            self._current.attach(temp)
-            self._current.attach(html_part)
+            if not self.must_replace:
+                self._current = MIMEMultipart(Subject=temp["Subject"],
+                                              To=temp["To"],
+                                              From=temp["From"],
+                                              Date=temp["Date"])
+
+                self._current.attach(temp)
+                self._current.attach(html_part)
+            else:
+                self._current = html_part
+                self.must_replace = False
         else:
             self._current.attach(html_part)
         return self
@@ -134,21 +142,36 @@ class MailBuilder():
             self._current = txt_part
         elif not isinstance(self._current, MIMEMultipart):
             temp = self._current
-            self._current = MIMEMultipart(Subject=temp["Subject"],
-                                          To=temp["To"],
-                                          From=temp["From"],
-                                          Date=temp["Date"])
-            self._current.attach(temp)
-            self._current.attach(txt_part)
+            if not self.must_replace:
+                self._current = MIMEMultipart(Subject=temp["Subject"],
+                                              To=temp["To"],
+                                              From=temp["From"],
+                                              Date=temp["Date"])
+                self._current.attach(temp)
+                self._current.attach(txt_part)
+            else:
+                self._current = txt_part
+                self.must_replace = False
         else:
             self._current.attach(txt_part)
         return self
-    
-    
+
+    def __enter__(self):
+        if self.must_replace:
+            self._current = MIMEText("")
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._current = None
+
     def __str__(self):
         return self.build().as_string()
+
+    def __init__(self, from_file=None):
+        if from_file is not None:
+            with open(from_file, 'rb') as f:
+                self._current = message_from_binary_file(f)
     
     def build(self):
         self._current["Date"] = formatdate(localtime=True)
         return self._current
-            
