@@ -7,14 +7,12 @@ Le lien avec sélénium:
 
 .. automodule:: testlinktool.wrapper.UITestCase
     :members:
-    :undoc-members:
 
 Le lien avec testlink:
 ======================
 
 .. automodule:: testlinktool.wrapper.TestLinkReport
     :members:
-    :undoc-members:
 
 
 ==========================
