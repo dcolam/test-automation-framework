@@ -18,10 +18,7 @@ import types
 import unittest
 
 from fnmatch import fnmatch
-try:
-    from os.path import relpath
-except ImportError:
-    from django.utils.unittest.compatibility import relpath
+from os.path import relpath
 
 VALID_MODULE_NAME = re.compile(r'[_a-z]\w*\.py$', re.IGNORECASE)
 
@@ -41,6 +38,7 @@ class OutputRedirector(object):
 
 stdout_redirector = OutputRedirector(sys.stdout)
 stderr_redirector = OutputRedirector(sys.stderr)
+
 class _TestLinkTestResult(unittest.TestResult):
     # note: _TestLinkTestResult is a pure representation of results in order to be sent to RTC server
     execution_time = 0
@@ -485,5 +483,5 @@ class TestLinkTestLoader(unittest.TestLoader):
                         yield _make_failed_load_tests(package.__name__, e,
                                                       self.suiteClass)
 
-defaultTestLoader = TestLinkTestLoader()
-        
+if __name__ == "__main__":
+    defaultTestLoader = TestLinkTestLoader()
