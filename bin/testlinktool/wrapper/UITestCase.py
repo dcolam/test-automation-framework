@@ -1,6 +1,7 @@
 import unittest
 from selenium import webdriver
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
@@ -176,6 +177,20 @@ class UITestCase(unittest.TestCase):
         if value is not None:
             select.select_by_value(value)
 
+    def get_option_value_with_text(self, text, select_name="", select_id=""):
+        if select_name:
+            options = self.driver.find_elements(By.CSS_SELECTOR, "select[name={}] option".format(select_name))
+        if select_id:
+            options = self.driver.find_elements(By.CSS_SELECTOR, "select#{} option".format(select_id))
+
+        if not options:
+            raise NoSuchElementException("No dropdown menu with id {} or name {}".format(select_id or "empty",
+                                                                                         select_name or "empty"))
+        for option in options:
+            if text in option.text:
+                return option.get_attribute("value")
+        raise NoSuchElementException("No option with text {}".format(text))
+
     def assertNotChecked(self, locator, rule, timeout=-1):
         try:
             if timeout > 0:
@@ -228,4 +243,3 @@ class UITestLinkTestCase(TestLinkTestCase, UITestCase):
     driver = None
     local = True
     remote_server = "" 
-
