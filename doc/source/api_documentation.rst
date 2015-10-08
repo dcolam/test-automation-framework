@@ -6,7 +6,7 @@ selenium WLDM API
 =================
 
 Test ojects
-------------------
+-----------
 
 .. automodule:: testlinktool.wrapper.UITestCase
     :members:

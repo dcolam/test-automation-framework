@@ -1,5 +1,5 @@
 Welcome to test automation framwork's documentation!
-========================================
+====================================================
 
 This tool provide you an easy-to-use API to deal with integration and system test with python.
 Then, we provide you an fast way to report them to the testlink test-management web service.
