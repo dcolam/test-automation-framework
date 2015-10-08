@@ -40,6 +40,10 @@ stdout_redirector = OutputRedirector(sys.stdout)
 stderr_redirector = OutputRedirector(sys.stderr)
 
 class _TestLinkTestResult(unittest.TestResult):
+    """
+    Inner class that is just here to send result to RTC server
+    """
+
     # note: _TestLinkTestResult is a pure representation of results in order to be sent to RTC server
     execution_time = 0
     
@@ -88,13 +92,19 @@ class _TestLinkTestResult(unittest.TestResult):
 
 
     def stopTest(self, test):
+        """Clear the test even if something went wrong in addSuccess or addError
+
+        :param test: current test
+        """
         # Usually one of addSuccess, addError or addFailure would have been called.
         # But there are some path in unittest that would bypass this.
         # We must disconnect stdout in stopTest(), which is guaranteed to be called.
-        self.complete_output()
-
+        print(self.complete_output())
 
     def addSuccess(self, test):
+        """
+        notify that the current test ended successfuly
+        """
         self.success_count += 1
         super(_TestLinkTestResult, self).addSuccess(test)
         output = self.complete_output()
@@ -107,6 +117,9 @@ class _TestLinkTestResult(unittest.TestResult):
             sys.stderr.write('.')
 
     def addError(self, test, err):
+        """
+        notify that the current test ended with an error (exception raised)
+        """
         self.error_count += 1
         super(_TestLinkTestResult, self).addError(test, err)
         _, _exc_str = self.errors[-1]
@@ -120,6 +133,9 @@ class _TestLinkTestResult(unittest.TestResult):
             sys.stderr.write('E')
 
     def addFailure(self, test, err):
+        """
+        notify that the current test failed
+        """
         self.failure_count += 1
         super(_TestLinkTestResult, self).addFailure(test, err)
         _, _exc_str = self.failures[-1]
@@ -133,6 +149,9 @@ class _TestLinkTestResult(unittest.TestResult):
             sys.stderr.write('F')
 
 class TestLinkRunner(object):
+    """
+    The object that is used to run the test in a testlink environment
+    """
     startTime = datetime.datetime.now()
     endTime = datetime.datetime.now()
     testlink_key = ""
@@ -216,6 +235,10 @@ class TestLinkRunner(object):
 
             
 class TestLinkTestCase(unittest.TestCase):
+    """
+    A basic overload of TestCase to get create a bridge with testlink
+    """
+
     customfield_names = []
     customfield_values = {}
     version = 1
@@ -223,12 +246,34 @@ class TestLinkTestCase(unittest.TestCase):
 
     @classmethod
     def get_plan_name(cls):
+        """Get testplan name : MANDATORY
+
+        :return: the testplan name
+        :rtype: str
+        """
         raise NotImplementedError("must be overriden")
     
     def populateCustomField(self, testLinkClient, project_id):
+        """get all customfields value from testlink test specification
+
+        :param testLinkClient:
+        :param project_id: the internal project id
+        :type project_id: int
+        """
         for fieldname in self.customfield_names:
             value = testLinkClient.getTestCaseCustomFieldDesignValue(self.external_id, self.version, project_id, fieldname, "value")
             self.customfield_values[fieldname] = value
+
+    def assertEqualToCustomfield(self, value, customfieldname):
+        """assert that the value is equal to the one given in the test case specification fieldname in testlink
+
+        :param value: the value tu compare
+        :param customfieldname: the testlink customfield name
+        :type customfieldname: str
+        """
+        if customfieldname not in self.customfield_values:
+            self.fail("{} not in registered fieldnames in test specification")
+        self.assertEqual(value, self.customfield_values[customfieldname])
 
 
 def _cmp(t1 ,t2):
@@ -243,6 +288,7 @@ class TestLinkTestLoader(unittest.TestLoader):
     """
     This class is responsible for loading tests according to various criteria
     and returning them wrapped in a TestSuite
+    This class was mainly inspired by django test framework
     """
     testMethodPrefix = 'test'
     sortTestMethodsUsing = _cmp
@@ -275,9 +321,12 @@ class TestLinkTestLoader(unittest.TestLoader):
             try:
                 return load_tests(self, tests, None)
             except Exception as e:
-                return _make_failed_load_tests(module.__name__, e,
+                return self._make_failed_load_tests(module.__name__, e,
                                                self.suiteClass)
         return tests
+
+    def _make_failed_load_tests(self, module_name, error, suiteclass):
+        sys.stderr.write("could not import {} due to {}".format(module_name, error))
 
     def loadTestsFromName(self, name, module=None):
         """Return a suite of all tests cases given a string specifier.
@@ -310,7 +359,7 @@ class TestLinkTestLoader(unittest.TestLoader):
             return self.loadTestsFromTestCase(obj)
         elif (isinstance(obj, types.UnboundMethodType) and
               isinstance(parent, type) and
-              issubclass(parent, case.TestCase)):
+              issubclass(parent, unittest.TestCase)):
             return self.suiteClass([parent(obj.__name__)])
         elif isinstance(obj, unittest.TestSuite):
             return obj
@@ -332,6 +381,7 @@ class TestLinkTestLoader(unittest.TestLoader):
         """
         suites = [self.loadTestsFromName(name, module) for name in names]
         return self.suiteClass(suites)
+
     def getTestCaseNames(self, testCaseClass):
         """Return a sorted sequence of method names found within testCaseClass
         """
@@ -443,7 +493,7 @@ class TestLinkTestLoader(unittest.TestLoader):
                 try:
                     module = self._get_module_from_name(name)
                 except:
-                    yield _make_failed_import_test(name, self.suiteClass)
+                    yield self._make_failed_import_test(name, self.suiteClass)
                 else:
                     mod_file = os.path.abspath(getattr(module, '__file__', full_path))
                     realpath = os.path.splitext(mod_file)[0]
@@ -480,7 +530,7 @@ class TestLinkTestLoader(unittest.TestLoader):
                     try:
                         yield load_tests(self, tests, pattern)
                     except Exception as e:
-                        yield _make_failed_load_tests(package.__name__, e,
+                        yield self._make_failed_load_tests(package.__name__, e,
                                                       self.suiteClass)
 
 if __name__ == "__main__":
