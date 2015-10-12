@@ -153,7 +153,7 @@ class MailBuilder:
         :return: a self instance to allow chaining
         :rtype: MailBuilder
         """
-        elements = self._current.get("To").split(COMMASPACE) or []
+        elements = self._current.get("To", "").split(COMMASPACE) or []
         self._current["To"] = COMMASPACE.join(elements + [str(a) for a in args])
         return self
 

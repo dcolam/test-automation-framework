@@ -227,6 +227,7 @@ class UITestCase(unittest.TestCase):
         :rtype: str
         :raises NoSuchElementException: if no select or option is found
         """
+        options = None
         if select_name:
             options = self.driver.find_elements(By.CSS_SELECTOR, "select[name={}] option".format(select_name))
         if select_id:
