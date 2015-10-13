@@ -126,7 +126,7 @@ class MailBuilder:
         :return: a self instance to allow chaining
         :rtype: MailBuilder
         """
-        if not self._current or not isinstance(self.current, MIMEMultipart):
+        if not self._current or not isinstance(self._current, MIMEMultipart):
             temp = self._current
             self._current = MIMEMultipart(Subject=temp["Subject"],
                                           To=temp["To"],
