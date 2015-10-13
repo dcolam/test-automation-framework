@@ -36,7 +36,7 @@ class SMTPTester():
             return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' grep ' + mail_id
                                 + ' /var/log/mail.log | grep "status=def"',
                                 shell=True).decode("ascii") != ''
-        except Exception:
+        except Exception as e:
             return False
 
     def _get_mail_has_success(self, server, mail_id):
@@ -274,6 +274,7 @@ class MailBuilder:
         if from_file is not None:
             with open(from_file, 'rb') as f:
                 self._current = message_from_binary_file(f)
+            self.must_replace = False
     
     def build(self):
         """gather all data and generate the mail
