@@ -21,12 +21,12 @@ class SMTPTester():
         "from": "test@test.org"}
 
     def _get_log_mail(self, server):
-        a = check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' cat /var/log/mail.log | '
+        a = check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' cat /var/log/mail.log | grep qavrc|'
                                                                          'cut -d " " -f 6|cut -d ":" -f 1| '
                                                                          'egrep [0-9A-Z]{10}| tail -n 1',
                          shell=True).decode("ascii")
 
-        return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' cat /var/log/mail.log | '
+        return check_result("ssh -i ~/.ssh/id_rsa.pub sysadmin@" + server + ' cat /var/log/mail.log | grep qavrc|'
                                                                             'cut -d " " -f 6|cut -d ":" -f 1| '
                                                                             'egrep [0-9A-Z]{10}| tail -n 1',
                             shell=True).decode("ascii")
