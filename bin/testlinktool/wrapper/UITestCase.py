@@ -147,9 +147,9 @@ class UITestCase(unittest.TestCase):
             element = WebDriverWait(self.driver, timeout).until_not(
                 EC.visibility_of_element_located((locator, rule))
             )
-            return element is None
-        except TimeoutException:
             return True
+        except TimeoutException:
+            return False
 
     def assertElementDoesNotAppearAfterWaiting(self, locator, rule, timeout):
         """check that an element appears even after waiting for *timeout* seconds
