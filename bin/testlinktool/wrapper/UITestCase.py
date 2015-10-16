@@ -143,9 +143,9 @@ class UITestCase(unittest.TestCase):
         :rtype: bool
         """
         try:
-            sleep(timeout)
-            element = WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located((locator, rule))
+
+            element = WebDriverWait(self.driver, timeout).until_not(
+                EC.visibility_of_element_located((locator, rule))
             )
             return element is None
         except TimeoutException:
