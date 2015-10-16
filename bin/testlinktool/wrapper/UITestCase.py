@@ -1,3 +1,4 @@
+from time import sleep
 import unittest
 from selenium import webdriver
 from selenium.webdriver import ActionChains
@@ -109,6 +110,26 @@ class UITestCase(unittest.TestCase):
         except NoSuchElementException:
             return True
 
+    def wait_element(self, locator, rule, timeout):
+        """wait for element to be visible
+
+        :param locator: the engine to process the rule
+        :type locator: selenium.webdriver.common.by.By
+        :param rule: the rule the element must match
+        :type rule: str
+        :param timeout: Number of second that we will poll the DOM. Once this is over, a TimeoutException is raised
+        :type timeout: int
+        :return:
+        :rtype: bool
+        """
+        try:
+            element = WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_element_located((locator, rule))
+            )
+            return element is not None
+        except TimeoutException:
+            return False
+
     def element_does_not_appear_after_waiting(self, locator, rule, timeout):
         """check that an element does not appear even after waiting for *timeout* seconds
 
@@ -122,6 +143,7 @@ class UITestCase(unittest.TestCase):
         :rtype: bool
         """
         try:
+            sleep(timeout)
             element = WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located((locator, rule))
             )
@@ -151,7 +173,7 @@ class UITestCase(unittest.TestCase):
         :param timeout: Number of second that we will poll the DOM. Once this is over, a TimeoutException is raised
         :type: int
         """
-        self.assertFalse(self.element_does_not_appear_after_waiting(locator, rule, timeout))
+        self.assertTrue(self.wait_element(locator, rule, timeout))
 
     def assertElementIsPresent(self, locator, rule):
         """check that element is present in DOM.
