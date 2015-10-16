@@ -7,9 +7,11 @@ setup(name='testlink_runner',
       url='',
       install_requires=[
         "TestLink-API-Python-client",
-        "selenium"
+        "selenium",
+        "jsonpickle"
       ],
-      packages=['testlinktool.wrapper', 'testlinktool.tools', 'testlinktool.main'],
+      packages=['testlinktool.wrapper', 'testlinktool.tools', 'testlinktool.main',
+                'vrc-kit-service.Entities', 'vrc-kit-service.RestService', 'vrc-kit-service.ErrorNo'],
       entry_points={
           'console_scripts': [
               'generate_testlink_test = testlinktool.main.generate_test:main',
