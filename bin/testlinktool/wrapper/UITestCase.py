@@ -299,7 +299,7 @@ class UITestCase(unittest.TestCase):
         try:
             if timeout > 0:
                 element = WebDriverWait(self.driver, timeout).until(
-                        EC.element_to_be_clickable((locator, rule))
+                        EC.presence_of_element_located((locator, rule))
                 )
             else:
                 element = self.driver.find_element(locator, rule)
@@ -340,6 +340,28 @@ class UITestCase(unittest.TestCase):
             self.assertEqual(element_value, value)
         else:
             self.assertIn(value, element_value)
+
+    def assertIsNotClickable(self, locator, rule, timeout=-1):
+        element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=False)
+        self.assertFalse(element.is_enabled())
+
+    def assertIsClickable(self, locator, rule, timeout=-1):
+        element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=True)
+        self.assertTrue(element.is_enabled())
+
+    def _find_with_timemout_or_directly(self, locator, rule, timeout=-1, must_be_clickable=True):
+        if timeout > 0:
+            condition = EC.element_to_be_clickable
+            if not must_be_clickable:
+                condition = EC.presence_of_element_located
+            element = WebDriverWait(self.driver, timeout).until(
+                    condition((locator, rule))
+            )
+        else:
+            element = self.driver.find_element(locator, rule)
+            if must_be_clickable and not element.is_enabled():
+                raise TimeoutException("Can't find clickable element")
+        return element
 
     def tearDown(self):
         if self.driver:
