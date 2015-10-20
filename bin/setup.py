@@ -10,7 +10,7 @@ setup(name='testlink_runner',
         "selenium",
         "jsonpickle"
       ],
-      packages=['testlinktool.wrapper', 'testlinktool.tools', 'testlinktool.main',
+      packages=['testlinktool.wrapper', 'testlinktool.main',
                 'vrc-kit-service'],
       entry_points={
           'console_scripts': [
