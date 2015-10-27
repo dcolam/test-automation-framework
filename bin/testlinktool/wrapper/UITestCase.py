@@ -39,6 +39,17 @@ class UITestCase(unittest.TestCase):
         """
         pass
 
+    def get_firefox(self):
+        try:
+            if self.local:
+                self.driver = webdriver.Firefox()
+            else:
+                self.driver = webdriver.Remote(
+                    command_executor=self.remote_server,
+                    desired_capabilities=DesiredCapabilities.FIREFOX)
+        except Exception:
+            self.skipTest("No firefox web driver in your PATH")
+
     def testChrome(self):
         """
         Launch test scenario in Chrome Web Driver
@@ -61,15 +72,7 @@ class UITestCase(unittest.TestCase):
         """
         Lauch test scenario in Firefox Web Driver
         """
-        try:
-            if self.local:
-                self.driver = webdriver.Firefox()
-            else:
-                self.driver = webdriver.Remote(
-                    command_executor=self.remote_server,
-                    desired_capabilities=DesiredCapabilities.FIREFOX)
-        except Exception:
-            self.skipTest("No firefox web driver in your PATH")
+        self.get_firefox()
         if self.maximize_window:
             self.driver.maximize_window()
         self.setUpUi()
@@ -277,7 +280,7 @@ class UITestCase(unittest.TestCase):
         try:
             if timeout > 0:
                 element = WebDriverWait(self.driver, timeout).until(
-                        EC.element_to_be_clickable((locator, rule))
+                        EC.presence_of_element_located((locator, rule))
                 )
             else:
                 element = self.driver.find_element(locator, rule)

@@ -137,7 +137,7 @@ class Service:
         d = self.jsonrequest("account/find", args)         
         if d is None:
             return None
-        list = Entities.AccountList(d);
+        list = Entities.AccountList(d)
         if len(list) == 0:
             return None            
         return list[0]
