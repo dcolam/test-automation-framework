@@ -1,6 +1,7 @@
-from unittest import main, defaultTestLoader
+from unittest import main
+from xvfbwrapper import Xvfb
 from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
-
+import argparse
 from os import getcwd
 from os.path import exists, join
 from json import load as json_read_file
@@ -13,6 +14,7 @@ except NameError:
             "__name__": "__main__",
         }
         exec(compile(open(filename, "rb").read(), filename, 'exec'), global_namespace)
+
 
 def launch(config_module=None):
     try:
@@ -41,8 +43,27 @@ def launch(config_module=None):
 
     except ImportError:
         print("Warning we are using default parameters")
-    defaultTestLoader = TestLinkTestLoader()
-    main(module=None,
-         testRunner=TestLinkRunner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-                                   MUST_CREATE_BUILD, TESTLINK_API_KEY),
-         argv=["", "discover", TEST_MODULE], testLoader=defaultTestLoader)
+    parser = argparse.ArgumentParser(description='Lauch test from test link repository')
+    group = parser.add_argument_group()
+    group.add_argument('-d', '--virtual_display', dest='is_virtual', default=False, action="store_true",
+                       help="verbosity")
+    group.add_argument('-v', '--verbose', dest='verbose', default=False, action="store_true",
+                       help="verbosity")
+
+    args = parser.parse_args()
+    if args.is_virtual:
+        with Xvfb(1920, 1080):
+            launch(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
+                   MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE)
+    else:
+        launch(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
+               MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE)
+
+
+def _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
+                  MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE):
+            defaultTestLoader = TestLinkTestLoader()
+            main(module=None,
+                 testRunner=TestLinkRunner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
+                                           MUST_CREATE_BUILD, TESTLINK_API_KEY),
+                 argv=["", "discover", TEST_MODULE], testLoader=defaultTestLoader)
