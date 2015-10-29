@@ -8,7 +8,8 @@ setup(name='testlink_runner',
       install_requires=[
         "TestLink-API-Python-client",
         "selenium",
-        "jsonpickle"
+        "jsonpickle",
+        "xvfbwrapper"
       ],
       packages=['testlinktool.wrapper', 'testlinktool.main',
                 'vrc-kit-service'],
