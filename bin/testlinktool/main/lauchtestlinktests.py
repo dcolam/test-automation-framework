@@ -64,7 +64,7 @@ def launch(config_module=None):
     ext_id_group = filter_group.add_mutually_exclusive_group()
     ext_id_group.add_argument('-I', "-idlist", dest="ext_ids", action=StoreExtId, default=None,
                               help="Comma separated list of external ids")
-    ext_id_group.add_argument('-N', "--name-pattern", dest="name_pattern", default=None)
+    ext_id_group.add_argument('-N', "--name-pattern", dest="name_pattern", default="")
 
 
 
