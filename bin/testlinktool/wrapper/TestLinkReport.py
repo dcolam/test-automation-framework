@@ -16,11 +16,14 @@ import sys
 import traceback
 import types
 import unittest
+import logging
 
 from fnmatch import fnmatch
 from os.path import relpath
 
 VALID_MODULE_NAME = re.compile(r'[_a-z]\w*\.py$', re.IGNORECASE)
+_log = logging.getLogger("testlink-runner")
+
 
 class OutputRedirector(object):
     """ Wrapper to redirect stdout or stderr """
@@ -38,6 +41,7 @@ class OutputRedirector(object):
 
 stdout_redirector = OutputRedirector(sys.stdout)
 stderr_redirector = OutputRedirector(sys.stderr)
+
 
 class _TestLinkTestResult(unittest.TestResult):
     """
@@ -68,6 +72,7 @@ class _TestLinkTestResult(unittest.TestResult):
 
     def startTest(self, test):
         super(_TestLinkTestResult, self).startTest(test)
+        _log.info(str(test))
         # just one buffer for both stdout and stderr
         self.outputBuffer = StringIO()
         stdout_redirector.fp = self.outputBuffer
@@ -99,6 +104,7 @@ class _TestLinkTestResult(unittest.TestResult):
         # Usually one of addSuccess, addError or addFailure would have been called.
         # But there are some path in unittest that would bypass this.
         # We must disconnect stdout in stopTest(), which is guaranteed to be called.
+        _log.warning(str(test) + " interrupted")
         self.complete_output()
 
     def addSuccess(self, test):
@@ -147,6 +153,7 @@ class _TestLinkTestResult(unittest.TestResult):
             sys.stderr.write('\n')
         else:
             sys.stderr.write('F')
+
 
 class TestLinkRunner(object):
     """
@@ -294,6 +301,18 @@ class TestLinkTestLoader(unittest.TestLoader):
     sortTestMethodsUsing = _cmp
     suiteClass = unittest.TestSuite
     _top_level_dir = None
+    test_name_pattern = ".+"
+    id_list = None
+    select_ui = True
+    select_fonctional = True
+
+    def __init__(self, **kwargs):
+        self.select_ui = not kwargs.get("only_fonctional", False)
+        self.select_fonctional = not kwargs.get("only_ui", False)
+        if kwargs.get("ext_ids", None):
+            self.id_list = kwargs.get("ext_ids")
+        if len(kwargs.get("name_pattern", "")) > 0:
+            self.test_name_pattern = kwargs.get("name_pattern")
 
     def loadTestsFromTestCase(self, testCaseClass):
         """Return a suite of all tests cases contained in testCaseClass"""
@@ -338,6 +357,7 @@ class TestLinkTestLoader(unittest.TestLoader):
         The method optionally resolves the names relative to a given module.
         """
         from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
+        test_name_regex = re.compile(self.test_name_pattern)
         parts = name.split('.')
         if module is None:
             parts_copy = parts[:]
@@ -359,7 +379,8 @@ class TestLinkTestLoader(unittest.TestLoader):
             return self.loadTestsFromTestCase(obj)
         elif (isinstance(obj, types.UnboundMethodType) and
               isinstance(parent, type) and
-              issubclass(parent, unittest.TestCase)):
+              issubclass(parent, unittest.TestCase)
+              and test_name_regex.match(obj.__name__)):
             return self.suiteClass([parent(obj.__name__)])
         elif isinstance(obj, unittest.TestSuite):
             return obj
@@ -367,7 +388,7 @@ class TestLinkTestLoader(unittest.TestLoader):
             test = obj()
             if isinstance(test, unittest.TestSuite):
                 return test
-            elif isinstance(test, unittest.TestCase):
+            elif isinstance(test, unittest.TestCase) and test_name_regex.match(test.__name__):
                 return self.suiteClass([test])
             else:
                 raise TypeError("calling %s returned %s, not a test" %
