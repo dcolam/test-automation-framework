@@ -333,9 +333,9 @@ class TestLinkTestLoader(unittest.TestLoader):
         for name in dir(module):
             obj = getattr(module, name)
             if isinstance(obj, type) and issubclass(obj, unittest.TestCase) and obj not in [UITestCase, UITestLinkTestCase]:
-                if issubclass(obj, UITestCase) and self.select_fonctional:
+                if issubclass(obj, UITestCase) and not self.select_ui:
                     continue
-                if not issubclass(obj, UITestCase) and self.select_ui:
+                if not issubclass(obj, UITestCase) and not self.select_fonctional:
                     continue
                 if self.id_list and not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list:
                     continue
