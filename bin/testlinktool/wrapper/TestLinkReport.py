@@ -329,9 +329,19 @@ class TestLinkTestLoader(unittest.TestLoader):
         """Return a suite of all tests cases contained in the given module"""
         tests = []
         from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
+        modul_name_regex = re.compile(self.test_name_pattern)
         for name in dir(module):
             obj = getattr(module, name)
             if isinstance(obj, type) and issubclass(obj, unittest.TestCase) and obj not in [UITestCase, UITestLinkTestCase]:
+                if issubclass(obj, UITestCase) and self.select_fonctional:
+                    continue
+                if not issubclass(obj, UITestCase) and self.select_ui:
+                    continue
+                if self.id_list and not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list:
+                    continue
+                if not modul_name_regex.match(name):
+                    continue
+
                 tests.append(self.loadTestsFromTestCase(obj))
 
         load_tests = getattr(module, 'load_tests', None)
@@ -357,7 +367,6 @@ class TestLinkTestLoader(unittest.TestLoader):
         The method optionally resolves the names relative to a given module.
         """
         from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
-        test_name_regex = re.compile(self.test_name_pattern)
         parts = name.split('.')
         if module is None:
             parts_copy = parts[:]
@@ -379,8 +388,7 @@ class TestLinkTestLoader(unittest.TestLoader):
             return self.loadTestsFromTestCase(obj)
         elif (isinstance(obj, types.UnboundMethodType) and
               isinstance(parent, type) and
-              issubclass(parent, unittest.TestCase)
-              and test_name_regex.match(obj.__name__)):
+              issubclass(parent, unittest.TestCase)):
             return self.suiteClass([parent(obj.__name__)])
         elif isinstance(obj, unittest.TestSuite):
             return obj
@@ -388,7 +396,7 @@ class TestLinkTestLoader(unittest.TestLoader):
             test = obj()
             if isinstance(test, unittest.TestSuite):
                 return test
-            elif isinstance(test, unittest.TestCase) and test_name_regex.match(test.__name__):
+            elif isinstance(test, unittest.TestCase):
                 return self.suiteClass([test])
             else:
                 raise TypeError("calling %s returned %s, not a test" %
