@@ -79,10 +79,10 @@ def launch(config_module=None):
     if args.is_virtual:
         with Xvfb(1920, 1080):
             _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-                   MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=parser.pattern, **filter_args)
+                   MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=args.pattern, **filter_args)
     else:
         _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-               MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=parser.pattern, **filter_args)
+               MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=args.pattern, **filter_args)
 
 
 def _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
