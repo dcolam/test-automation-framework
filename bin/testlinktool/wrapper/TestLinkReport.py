@@ -337,7 +337,7 @@ class TestLinkTestLoader(unittest.TestLoader):
                     continue
                 if not issubclass(obj, UITestCase) and not self.select_fonctional:
                     continue
-                if self.id_list and not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list:
+                if self.id_list and (not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list):
                     continue
                 if not modul_name_regex.match(name):
                     continue
