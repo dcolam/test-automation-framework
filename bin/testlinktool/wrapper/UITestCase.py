@@ -126,10 +126,10 @@ class UITestCase(unittest.TestCase):
         :rtype: bool
         """
         try:
-            element = WebDriverWait(self.driver, timeout).until(
+            WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located((locator, rule))
             )
-            return element is not None
+            return True
         except TimeoutException:
             return False
 
@@ -146,12 +146,15 @@ class UITestCase(unittest.TestCase):
         :rtype: bool
         """
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located((locator, rule))
-            )
-            return False
+            if self.element_does_not_appear(locator, rule):
+                return not self.wait_element(locator, rule, timeout)
+            else:
+                WebDriverWait(self.driver, timeout).until_not(
+                    EC.visibility_of_element_located((locator, rule))
+                )
+                return True
         except TimeoutException:
-            return True
+            return False
 
     def assertElementDoesNotAppearAfterWaiting(self, locator, rule, timeout):
         """check that an element appears even after waiting for *timeout* seconds
