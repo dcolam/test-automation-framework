@@ -4,16 +4,10 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-import sys
-import time
 from testlink import TestlinkAPIClient, TestLinkHelper
-import json
-import test
-from unittest import defaultTestLoader
 import os
 import re
 import sys
-import traceback
 import types
 import unittest
 import logging
@@ -68,7 +62,6 @@ class _TestLinkTestResult(unittest.TestResult):
         #   stack trace,
         # )
         self.result = []
-
 
     def startTest(self, test):
         super(_TestLinkTestResult, self).startTest(test)
@@ -173,7 +166,7 @@ class TestLinkRunner(object):
     
     def __init__(self, server_url, project_id,
                  platformname, must_create_build,
-                 testlink_key):
+                 testlink_key, verbose=False):
         self.server_url = server_url
         self.project_id = project_id
         self.platformname = platformname
@@ -182,6 +175,7 @@ class TestLinkRunner(object):
         tl_helper = TestLinkHelper(self.server_url, self.testlink_key)
         self.testlink_client = tl_helper.connect(TestlinkAPIClient)
         self.plans = self.testlink_client.getProjectTestPlans(self.project_id)
+        self.verbose = verbose
     
     def _sendReport(self, report):
 
@@ -192,13 +186,16 @@ class TestLinkRunner(object):
             self.build[plan["name"]] = self.testlink_client.createBuild(plan["id"],
                                                                        "build-auto:" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                                                        "auto build with python and selenium")
-        print(self.testlink_client.reportTCResult(test_case["id"],
-                                            plan["id"],
-                                            None,
-                                            self.translation[report["state"]],
-                                            report["note"],
-                                            guess=True,
-                                            platformname=self.platformname))
+        result = self.testlink_client.reportTCResult(test_case["id"],
+                                                     plan["id"],
+                                                     None,
+                                                     self.translation[report["state"]],
+                                                     report["note"],
+                                                     guess=True,
+                                                     platformname=self.platformname)
+        _log.debug(result)
+        if self.verbose:
+            print(result)
         
     def generateReport(self, test, result):
         final_report = {}
@@ -217,7 +214,7 @@ class TestLinkRunner(object):
                     final_report[testcaseid]["state"] = max(testresult[0], final_report[testcaseid]["state"])
                     final_report[testcaseid]["note"] += testresult[3] + "\n"
             except Exception as e:
-                print("report was not sent due to " + str(e))
+                _log.error("report was not sent due to " + str(e))
         for report in final_report.values():
             self._sendReport(report)
     
