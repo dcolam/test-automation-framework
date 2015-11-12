@@ -5,6 +5,7 @@ import argparse
 from os import getcwd
 from os.path import exists, join
 from json import load as json_read_file
+import logging
 try:
     execfile
 except NameError:
@@ -14,6 +15,7 @@ except NameError:
             "__name__": "__main__",
         }
         exec(compile(open(filename, "rb").read(), filename, 'exec'), global_namespace)
+_log = logging.getLogger("testlinkrunner")
 
 
 class StoreExtId(argparse.Action):
@@ -25,7 +27,7 @@ def launch(config_module=None):
     try:
         from testlinktool.main.config import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,\
                                              MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE
-        print(join(getcwd(), 'config.py'))
+        _log.debug(join(getcwd(), 'config.py'))
         
         if config_module is not None:
             TESTLINK_SERVER = getattr(config_module, "TESTLINK_SERVER")
@@ -47,7 +49,7 @@ def launch(config_module=None):
                 TEST_MODULE = conf_dic["TEST_MODULE"]
 
     except ImportError:
-        print("Warning we are using default parameters")
+        _log.warning("We are using default parameters")
     parser = argparse.ArgumentParser(description='Lauch test from test link repository')
     group = parser.add_argument_group()
     group.add_argument('-d', '--virtual_display', dest='is_virtual', default=False, action="store_true",
@@ -79,14 +81,16 @@ def launch(config_module=None):
     if args.is_virtual:
         with Xvfb(1920, 1080):
             _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-                   MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=args.pattern, **filter_args)
+                          MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=args.pattern,
+                          verbose=args.verbose, **filter_args)
     else:
         _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-               MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=args.pattern, **filter_args)
+                      MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=args.pattern, verbose=args.verbose,
+                      **filter_args)
 
 
 def _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-                  MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=None, **kwargs):
+                  MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, verbose=False, test_pattern=None, **kwargs):
             defaultTestLoader = TestLinkTestLoader(**kwargs)
             args = ["", "discover", "-s", TEST_MODULE]
             if test_pattern:
@@ -94,5 +98,5 @@ def _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
                 args.append(str(test_pattern))
             main(module=None,
                  testRunner=TestLinkRunner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-                                           MUST_CREATE_BUILD, TESTLINK_API_KEY),
+                                           MUST_CREATE_BUILD, TESTLINK_API_KEY, verbose=verbose),
                  argv=args, testLoader=defaultTestLoader)
