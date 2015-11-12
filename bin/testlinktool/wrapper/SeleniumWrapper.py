@@ -11,6 +11,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 class SeleniumWrapperMixin:
     driver = None
+    local = True
 
     def get_firefox(self):
 
