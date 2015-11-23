@@ -22,6 +22,13 @@ class SeleniumWrapperMixin:
                 command_executor=self.remote_server,
                 desired_capabilities=DesiredCapabilities.FIREFOX)
 
+    def get_htmlunit(self):
+        self.driver = webdriver.Remote(command_executor=self.remote_server,
+                                       desired_capabilities=DesiredCapabilities.HTMLUNITWITHJS)
+
+    def get_chrome(self):
+        self.driver = webdriver.Chrome()
+
     def wait_to_be_clickable_then_click(self, locator, rule, timeout):
         """wait for at most *timeout* seconds for the first element matching the rule to be clickable.\
         then trigger click event
