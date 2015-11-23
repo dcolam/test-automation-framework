@@ -75,7 +75,7 @@ def launch(config_module=None):
     filter_args = {
         "only_ui": args.only_ui,
         "only_fonctional": args.only_fonctional,
-        "id_list": args.ext_ids,
+        "id_list": args.ext_ids,    
         "name_pattern": args.name_pattern
     }
     if args.is_virtual:
