@@ -29,6 +29,9 @@ class SeleniumWrapperMixin:
     def get_chrome(self):
         self.driver = webdriver.Chrome()
 
+    def get_phantomjs(self):
+        self.driver = webdriver.PhantomJS()
+
     def wait_to_be_clickable_then_click(self, locator, rule, timeout):
         """wait for at most *timeout* seconds for the first element matching the rule to be clickable.\
         then trigger click event
