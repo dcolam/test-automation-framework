@@ -7,6 +7,8 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+import logging
+_log = logging.getLogger("testlinktool.selinum")
 
 
 class SeleniumWrapperMixin:
@@ -201,3 +203,9 @@ class SeleniumWrapperMixin:
             if must_be_clickable and not element.is_enabled():
                 raise TimeoutException("Can't find clickable element")
         return element
+
+    def close_driver(self):
+        try:
+            self.driver.close()
+        except (ConnectionRefusedError, AttributeError) as e:
+            _log.debug(e)
