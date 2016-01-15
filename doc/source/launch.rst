@@ -7,7 +7,7 @@ Configurer et lancer
 
 Tout d'abord il vous faudra configurer le module à l'aide d'un fichier ``config.json`` qui se présente ainsi:
 
-..sourcecode:: json
+.. sourcecode:: json
 
     {
         "TEST_MODULE": "tests",
@@ -32,7 +32,7 @@ Ensuite deux solutions s'offrent à vous :
 Exemples
 --------
 
-..sourcecode:: python
+.. sourcecode:: python
 
     from testlinktool.main.lauchtestlinktests import launch
     import logging
@@ -50,7 +50,7 @@ Manuel d'utilisation de la commande
 
 ``launch_testlink_test -h`` :
 
-..sourcecode:: bash
+.. sourcecode:: bash
 
     usage: launch_testlink_test [-h] [-d] [-v] [-p PATTERN] [-u | -f]
                             [-I EXT_IDS | -N NAME_PATTERN]
