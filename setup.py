@@ -11,8 +11,7 @@ setup(name='testlink_runner',
         "xvfbwrapper",
         "lxml"
       ],
-      packages=['testlinktool.wrapper', 'testlinktool.main',
-                'vrc-kit-service'],
+      packages=['testlinktool.wrapper', 'testlinktool.main'],
       entry_points={
           'console_scripts': [
               'generate_testlink_test = testlinktool.main.generate_test:main',
