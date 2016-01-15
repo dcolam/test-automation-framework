@@ -80,7 +80,6 @@ class _TestLinkTestResult(unittest.TestResult):
         sys.stdout = stdout_redirector
         sys.stderr = stderr_redirector
 
-
     def complete_output(self):
         """
         Disconnect output redirection and return buffer.
@@ -92,7 +91,6 @@ class _TestLinkTestResult(unittest.TestResult):
             self.stdout0 = None
             self.stderr0 = None
         return self.outputBuffer.getvalue()
-
 
     def stopTest(self, test):
         """Clear the test even if something went wrong in addSuccess or addError
@@ -188,7 +186,6 @@ class TestLinkRunner(object):
     
     def _sendReport(self, report):
 
-
         test_case = self.testlink_client.getTestCaseIDByName(report["testcaseid"])[0]
         plan = [p for p in self.plans if p["name"] == report['testsuitid']][0]
         if plan["name"] not in self.build and self.must_create_build:
@@ -228,6 +225,13 @@ class TestLinkRunner(object):
             self.error += 1
 
     def generateReport(self, test, result):
+        """Send per-test report to testling and generate xml JUnit report if was asked
+
+        :param test:
+        :param result: test result object
+        :type result: _TestLinkTestResult
+        :return:
+        """
         final_report = {}
 
         self.__init_xml(len(result.result))
@@ -289,7 +293,7 @@ class TestLinkRunner(object):
             
         return result
 
-            
+
 class TestLinkTestCase(unittest.TestCase):
     """
     A basic overload of TestCase to get create a bridge with testlink
@@ -308,7 +312,7 @@ class TestLinkTestCase(unittest.TestCase):
         :rtype: str
         """
         raise NotImplementedError("must be overriden")
-    
+
     def populateCustomField(self, testLinkClient, project_id):
         """get all customfields value from testlink test specification
 
@@ -332,7 +336,7 @@ class TestLinkTestCase(unittest.TestCase):
         self.assertEqual(value, self.customfield_values[customfieldname])
 
 
-def _cmp(t1 ,t2):
+def _cmp(t1, t2):
     if t1 < t2:
         return -1
     if t1 == t2:
@@ -518,24 +522,29 @@ class TestLinkTestLoader(unittest.TestLoader):
             if start_dir != top_level_dir:
                 is_not_importable = not os.path.isfile(os.path.join(start_dir, '__init__.py'))
         else:
-            # support for discovery from dotted module names
-            try:
-                __import__(start_dir)
-            except ImportError:
-                is_not_importable = True
-            else:
-                the_module = sys.modules[start_dir]
-                top_part = start_dir.split('.')[0]
-                start_dir = os.path.abspath(os.path.dirname((the_module.__file__)))
-                if set_implicit_top:
-                    self._top_level_dir = os.path.abspath(os.path.dirname(os.path.dirname(sys.modules[top_part].__file__)))
-                    sys.path.remove(top_level_dir)
+            is_not_importable, start_dir = self.__import_doted_module_name(is_not_importable, set_implicit_top,
+                                                                           start_dir, top_level_dir)
 
         if is_not_importable:
             raise ImportError('Start directory is not importable: %r' % start_dir)
 
         tests = list(self._find_tests(start_dir, pattern))
         return self.suiteClass(tests)
+
+    def __import_doted_module_name(self, is_not_importable, set_implicit_top, start_dir, top_level_dir):
+        # support for discovery from dotted module names
+        try:
+            __import__(start_dir)
+        except ImportError:
+            is_not_importable = True
+        else:
+            the_module = sys.modules[start_dir]
+            top_part = start_dir.split('.')[0]
+            start_dir = os.path.abspath(os.path.dirname((the_module.__file__)))
+            if set_implicit_top:
+                self._top_level_dir = os.path.abspath(os.path.dirname(os.path.dirname(sys.modules[top_part].__file__)))
+                sys.path.remove(top_level_dir)
+        return is_not_importable, start_dir
 
     def _get_name_from_path(self, path):
         path = os.path.splitext(os.path.normpath(path))[0]

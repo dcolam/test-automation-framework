@@ -24,6 +24,7 @@ class StoreExtId(argparse.Action):
 
 
 def launch(config_module=None):
+    # get configuration
     try:
         from testlinktool.main.config import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,\
                                              MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE
