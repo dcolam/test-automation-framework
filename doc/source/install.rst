@@ -52,6 +52,12 @@ fermez la fenêtre adminstrateur et relancez un powershell en utilisateur normal
 Installer avec pip
 ==================
 
+Installez les dépendances à lxml:
+
+..sourcecode:: bash
+
+    sudo apt-get install libz-dev libxml2-dev libxslt-dev python3-dev
+
 Lancez simplement ``pip install svn+svn://devlnx00.goto.fr/qualification/test_automation_framework/bin # installe le framework``
 
 Installer avec setup.py

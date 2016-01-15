@@ -14,7 +14,7 @@ Test ojects
 WLDM selenium wrapper API
 -------------------------
 
-.. automodule:: testlinktool.wrapper.SeleniumWrapper
+.. automodule:: testlinktool.wrapper.TestLinkReport
     :members:
 
 TestLink runner and wrappers
