@@ -68,15 +68,14 @@ def launch(config_module=None):
                               help="Comma separated list of external ids")
     ext_id_group.add_argument('-N', "--name-pattern", dest="name_pattern", default="")
 
-
-
     args = parser.parse_args()
 
     filter_args = {
         "only_ui": args.only_ui,
         "only_fonctional": args.only_fonctional,
         "id_list": args.ext_ids,    
-        "name_pattern": args.name_pattern
+        "name_pattern": args.name_pattern,
+        "generate_xml": True
     }
     if args.is_virtual:
         with Xvfb(1920, 1080):
