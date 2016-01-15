@@ -1,36 +1,3 @@
-"""
-
-Copyright (c) 2016x "Vade Retro Technology"
-
-...
-
-
-This file is part of test-automation-framework.
-
-
-test-automation-framework is free software: you can redistribute it and/or modify
-
-it under the terms of the GNU General Public License as published by
-
-the Free Software Foundation, either version 3 of the License, or
-
-(at your option) any later version.
-
-
-This program is distributed in the hope that it will be useful,
-
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-
-GNU General Public License for more details.
-
-
-You should have received a copy of the GNU General Public License
-
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-"""
 import contextlib
 
 import datetime
@@ -113,6 +80,7 @@ class _TestLinkTestResult(unittest.TestResult):
         sys.stdout = stdout_redirector
         sys.stderr = stderr_redirector
 
+
     def complete_output(self):
         """
         Disconnect output redirection and return buffer.
@@ -124,6 +92,7 @@ class _TestLinkTestResult(unittest.TestResult):
             self.stdout0 = None
             self.stderr0 = None
         return self.outputBuffer.getvalue()
+
 
     def stopTest(self, test):
         """Clear the test even if something went wrong in addSuccess or addError
@@ -206,9 +175,8 @@ class TestLinkRunner(object):
 
     def __init__(self, server_url, project_id,
                  platformname, must_create_build,
-                 testlink_key, verbose=False, generate_xml=False):
+                 testlink_key, verbose=False):
         self.server_url = server_url
-        self.generate_xml = generate_xml
         self.project_id = project_id
         self.platformname = platformname
         self.must_create_build = must_create_build
@@ -219,6 +187,7 @@ class TestLinkRunner(object):
         self.verbose = verbose
     
     def _sendReport(self, report):
+
 
         test_case = self.testlink_client.getTestCaseIDByName(report["testcaseid"])[0]
         plan = [p for p in self.plans if p["name"] == report['testsuitid']][0]
@@ -238,16 +207,16 @@ class TestLinkRunner(object):
             print(result)
 
     def __init_xml(self):
-        self.xml = lxml.etree.Element("testsuite", time=str(self.stopTime - self.start_time).encode("utf-8"))
+        self.xml = lxml.etree.Element("testsuite", time=self.stopTime - self.start_time)
 
     def __finalize_xml(self):
-        self.xml.set("failures", str(self.failure))
-        self.xml.set("errors", str(self.error))
-        self.xml.set("tests", str(self.tests))
+        self.xml.set("failures", self.failure)
+        self.xml.set("errors", self.error)
+        self.xml.set("tests", self.tests)
         with contextlib.suppress(OSError):
             os.makedirs("./test-reports")
         with open("./test-reports/TEST-" + str(time.time()) + ".xml", "wb") as xmlfile:
-            xmlfile.write(lxml.etree.tostring(self.xml, pretty_print=True))
+            xmlfile.write(lxml.etree.tostring(self.xml, pretty_print=True).encode("utf-8"))
 
     def __push_xml(self, report):
         element = lxml.etree.SubElement(self.xml, "testcase", classname=str(report["testcaseid"]), name=report["name"])
@@ -255,21 +224,13 @@ class TestLinkRunner(object):
             lxml.etree.SubElement(element, "failure", message=report["note"], type="AssertionError")
             self.failure += 1
         elif report["state"] == 2:
-            lxml.etree.SubElement(element, 'error', message=report["note"], type=str(report["failureException"]))
+            lxml.etree.SubElement(element, 'error', message=report["note"], type="Exception")
             self.error += 1
-        self.tests += 1
 
     def generateReport(self, test, result):
-        """Send per-test report to testling and generate xml JUnit report if was asked
-
-        :param test:
-        :param result: test result object
-        :type result: _TestLinkTestResult
-        :return:
-        """
         final_report = {}
 
-        self.__init_xml()
+        self.__init_xml(len(result.result))
         for testresult in result.result:
 
             try:
@@ -283,7 +244,7 @@ class TestLinkRunner(object):
                         "note": "",
                         "nb": 1,
                         "states": [testresult[0]],
-                        "name": testcaseid + "." + testresult[1]._testMethodName
+                        "name": testresult[1].__name__
                     }
                 if testresult[0] != 0:
                     final_report[testcaseid]["state"] = max(testresult[0], final_report[testcaseid]["state"])
@@ -297,8 +258,7 @@ class TestLinkRunner(object):
                         "note": testresult[3],
                         "nb": 1,
                         "states": [testresult[0]],
-                        "name":  testcaseid + "." + testresult[1]._testMethodName,
-                        "failure_exception": testresult[1].failureException
+                        "name": testresult[1].__name__
                     })
             except Exception as e:
                 _log.error("report was not sent due to " + str(e))
@@ -307,7 +267,7 @@ class TestLinkRunner(object):
 
         for report in final_report.values():
             self._sendReport(report)
-        if hasattr(self, "generate_xml") and self.generate_xml:
+        if self.generate_xml:
             self.__finalize_xml()
 
     def _init_cases(self, testsuite):
@@ -320,16 +280,16 @@ class TestLinkRunner(object):
     def run(self, test):
         "Run the given test case or test suite."
         result = _TestLinkTestResult(2)
-        self.start_time = time.time()
+        self.start_time = datetime.datetime.now()
         self._init_cases(test)
         test(result)
-        self.stopTime = time.time()
+        self.stopTime = datetime.datetime.now()
         result.execution_time = self.stopTime - self.start_time
         self.generateReport(test, result)
             
         return result
 
-
+            
 class TestLinkTestCase(unittest.TestCase):
     """
     A basic overload of TestCase to get create a bridge with testlink
@@ -348,7 +308,7 @@ class TestLinkTestCase(unittest.TestCase):
         :rtype: str
         """
         raise NotImplementedError("must be overriden")
-
+    
     def populateCustomField(self, testLinkClient, project_id):
         """get all customfields value from testlink test specification
 
@@ -372,7 +332,7 @@ class TestLinkTestCase(unittest.TestCase):
         self.assertEqual(value, self.customfield_values[customfieldname])
 
 
-def _cmp(t1, t2):
+def _cmp(t1 ,t2):
     if t1 < t2:
         return -1
     if t1 == t2:
@@ -398,6 +358,7 @@ class TestLinkTestLoader(unittest.TestLoader):
     def __init__(self, **kwargs):
         self.select_ui = not kwargs.get("only_fonctional", False)
         self.select_fonctional = not kwargs.get("only_ui", False)
+        self.generate_xml = kwargs.get("generate_xml", False)
         if kwargs.get("ext_ids", None):
             self.id_list = kwargs.get("ext_ids")
         if len(kwargs.get("name_pattern", "")) > 0:
@@ -414,50 +375,24 @@ class TestLinkTestLoader(unittest.TestLoader):
         loaded_suite = self.suiteClass(map(testCaseClass, testCaseNames))
         return loaded_suite
 
-    def __filter_module_names(self, module):
-        from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
-
-        def __filter(name):
-            obj = getattr(module, name)
-            is_a_test_object = isinstance(obj, type) and \
-                               issubclass(obj, unittest.TestCase) and \
-                               obj not in [UITestCase, UITestLinkTestCase]
-            # a good name must fit this conditions :
-            # match the name pattern if such a regex exists
-            # is in selected ids if asked by the user
-            # has the good tag if such filter is selected
-            return is_a_test_object and self.is_authorized_by_tag_filter(obj) \
-                   and self.is_authorized_by_id_filter(obj) and self.modul_name_regex.match(name)
-        return __filter
-
-    def is_authorized_by_tag_filter(self, obj):
-        """checkout the test is authorized by "Only UI" or "Only functional" tags if asked by command
-
-        :param obj:
-        :return:
-        :rtype: bool
-        """
-        from testlinktool.wrapper.UITestCase import UITestCase
-        return (not issubclass(obj, UITestCase) and self.select_fonctional) or\
-               (issubclass(obj, UITestCase) and self.select_ui)
-
-    def is_authorized_by_id_filter(self, obj):
-        """
-
-        :param obj:
-        :return:
-        :rtype: bool
-        """
-        return not (self.id_list and (not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list))
-
     def loadTestsFromModule(self, module, use_load_tests=True):
         """Return a suite of all tests cases contained in the given module"""
         tests = []
-        self.modul_name_regex = re.compile(self.test_name_pattern)
-        names = filter(self.__filter_module_names(module), dir(module))
-        for name in names:
+        from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
+        modul_name_regex = re.compile(self.test_name_pattern)
+        for name in dir(module):
             obj = getattr(module, name)
-            tests.append(self.loadTestsFromTestCase(obj))
+            if isinstance(obj, type) and issubclass(obj, unittest.TestCase) and obj not in [UITestCase, UITestLinkTestCase]:
+                if issubclass(obj, UITestCase) and not self.select_ui:
+                    continue
+                if not issubclass(obj, UITestCase) and not self.select_fonctional:
+                    continue
+                if self.id_list and (not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list):
+                    continue
+                if not modul_name_regex.match(name):
+                    continue
+
+                tests.append(self.loadTestsFromTestCase(obj))
 
         load_tests = getattr(module, 'load_tests', None)
         tests = self.suiteClass(tests)
@@ -583,29 +518,24 @@ class TestLinkTestLoader(unittest.TestLoader):
             if start_dir != top_level_dir:
                 is_not_importable = not os.path.isfile(os.path.join(start_dir, '__init__.py'))
         else:
-            is_not_importable, start_dir = self.__import_doted_module_name(is_not_importable, set_implicit_top,
-                                                                           start_dir, top_level_dir)
+            # support for discovery from dotted module names
+            try:
+                __import__(start_dir)
+            except ImportError:
+                is_not_importable = True
+            else:
+                the_module = sys.modules[start_dir]
+                top_part = start_dir.split('.')[0]
+                start_dir = os.path.abspath(os.path.dirname((the_module.__file__)))
+                if set_implicit_top:
+                    self._top_level_dir = os.path.abspath(os.path.dirname(os.path.dirname(sys.modules[top_part].__file__)))
+                    sys.path.remove(top_level_dir)
 
         if is_not_importable:
             raise ImportError('Start directory is not importable: %r' % start_dir)
 
         tests = list(self._find_tests(start_dir, pattern))
         return self.suiteClass(tests)
-
-    def __import_doted_module_name(self, is_not_importable, set_implicit_top, start_dir, top_level_dir):
-        # support for discovery from dotted module names
-        try:
-            __import__(start_dir)
-        except ImportError:
-            is_not_importable = True
-        else:
-            the_module = sys.modules[start_dir]
-            top_part = start_dir.split('.')[0]
-            start_dir = os.path.abspath(os.path.dirname((the_module.__file__)))
-            if set_implicit_top:
-                self._top_level_dir = os.path.abspath(os.path.dirname(os.path.dirname(sys.modules[top_part].__file__)))
-                sys.path.remove(top_level_dir)
-        return is_not_importable, start_dir
 
     def _get_name_from_path(self, path):
         path = os.path.splitext(os.path.normpath(path))[0]

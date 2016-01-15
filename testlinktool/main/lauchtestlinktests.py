@@ -1,36 +1,3 @@
-"""
-
-Copyright (c) 2016 "Vade Retro Technology"
-
-...
-
-
-This file is part of test-automation-framework.
-
-
-test-automation-framework is free software: you can redistribute it and/or modify
-
-it under the terms of the GNU General Public License as published by
-
-the Free Software Foundation, either version 3 of the License, or
-
-(at your option) any later version.
-
-
-This program is distributed in the hope that it will be useful,
-
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-
-GNU General Public License for more details.
-
-
-You should have received a copy of the GNU General Public License
-
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-"""
 from unittest import main
 from xvfbwrapper import Xvfb
 from testlinktool.wrapper.TestLinkReport import TestLinkRunner, TestLinkTestLoader
@@ -57,7 +24,6 @@ class StoreExtId(argparse.Action):
 
 
 def launch(config_module=None):
-    # get configuration
     try:
         from testlinktool.main.config import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,\
                                              MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE
@@ -107,7 +73,7 @@ def launch(config_module=None):
     filter_args = {
         "only_ui": args.only_ui,
         "only_fonctional": args.only_fonctional,
-        "ext_ids": args.ext_ids,
+        "id_list": args.ext_ids,    
         "name_pattern": args.name_pattern,
         "generate_xml": True
     }
@@ -124,12 +90,12 @@ def launch(config_module=None):
 
 def _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
                   MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, verbose=False, test_pattern=None, **kwargs):
-    defaultTestLoader = TestLinkTestLoader(**kwargs)
-    args = ["", "discover", "-s", TEST_MODULE]
-    if test_pattern:
-        args.append("-p")
-        args.append(str(test_pattern))
-    main(module=None,
-         testRunner=TestLinkRunner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-                                   MUST_CREATE_BUILD, TESTLINK_API_KEY, verbose=verbose, generate_xml=True),
-         argv=args, testLoader=defaultTestLoader)
+            defaultTestLoader = TestLinkTestLoader(**kwargs)
+            args = ["", "discover", "-s", TEST_MODULE]
+            if test_pattern:
+                args.append("-p")
+                args.append(str(test_pattern))
+            main(module=None,
+                 testRunner=TestLinkRunner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
+                                           MUST_CREATE_BUILD, TESTLINK_API_KEY, verbose=verbose),
+                 argv=args, testLoader=defaultTestLoader)
