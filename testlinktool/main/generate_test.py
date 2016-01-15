@@ -6,7 +6,7 @@ from os.path import exists, join
 from os import mkdir, getcwd
 
 try:
-    execfile
+    execfile  # old artifact because I tried to make this framework py2 compatible but gave up.
 except NameError:
     def execfile(filename):
         global_namespace = {
@@ -49,7 +49,6 @@ def __is_a_functions(precondition):
         if char in states[curr_state]:
             curr_state = states[curr_state][char]
     return curr_state == "NAME"
-
 
 
 def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
@@ -137,11 +136,11 @@ def get_tests(testlink_client, keyword, plan, TESTLINK_PROJECT_ID, CUSTOM_FIELD_
     if keyword:
         cases = testlink_client.getTestCasesForTestPlan(plan, details="full", keywords=keyword, executiontype=2)
     else:
-        cases = testlink_client.getTestCasesForTestPlan(plan, details="full", keywords=keyword, executiontype=2)
+        cases = testlink_client.getTestCasesForTestPlan(plan, details="full", executiontype=2)
 
     temp = cases.values()
     cases = []
-    if isinstance(temp, dict): # in case of deepest formating.
+    if isinstance(temp, dict):  # in case of deepest formating.
         temp = temp.values()
     for values in list(temp):
         for v in values:
@@ -168,8 +167,8 @@ def main(config_module=None):
     from testlinktool.main.config import TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PROJECT_NAME,\
                                          TESTLINK_API_KEY, CUSTOM_FIELD_NAME_LIST, UI_TEST_KEYWORD
 
+    # use configuration
     try:
-        
         if config_module is not None:
             TESTLINK_SERVER = getattr(config_module, "TESTLINK_SERVER")
             TESTLINK_PROJECT_ID = getattr(config_module, "TESTLINK_PROJECT_ID")
@@ -177,8 +176,6 @@ def main(config_module=None):
             TESTLINK_API_KEY = getattr(config_module, "TESTLINK_API_KEY")
             CUSTOM_FIELD_NAME_LIST = getattr(config_module, "CUSTOM_FIELD_NAME_LIST")
             UI_TEST_KEYWORD = getattr(config_module, "UI_TEST_KEYWORD")
-        elif exists(join(getcwd(), 'config.py')):
-            execfile(join(getcwd(), 'config.py'))
         elif exists(join(getcwd(), 'config.json')):
             with open(join(getcwd(), 'config.json')) as j_file:
                 conf_dic = json_read_file(j_file)
@@ -207,26 +204,26 @@ def main(config_module=None):
     testlink_client = tl_helper.connect(TestlinkAPIClient)
     plan_id = int(testlink_client.getTestPlanByName(TESTLINK_PROJECT_NAME, args.plan)[0]['id'])
     suites = testlink_client.getTestSuitesForTestPlan(plan_id)
+    # build a id/name relation dictionary
     suites_tc_dic = {
         suite["id"]: suite["name"] for suite in suites
     }
-    
     cases = get_tests(testlink_client, UI_TEST_KEYWORD, plan_id, TESTLINK_PROJECT_ID, CUSTOM_FIELD_NAME_LIST)
     names = [n["tcase_name"] for n in cases]
     other_cases = get_tests(testlink_client, None, plan_id, TESTLINK_PROJECT_ID, CUSTOM_FIELD_NAME_LIST)
     cases += [n for n in other_cases if n["tcase_name"] not in names]
     for case in cases:
         case["suite"] = suites_tc_dic[case["testsuite_id"]]
-    #print(json.dumps(cases, indent=4))
+
     tests = []
+    # if we do not force to download everythin we get already defined tests to avoid erasing them
     if not args.download_all:
         tests += list(set([a for a in get_test_names(defaultTestLoader.discover(args.dest_dir))]))
-    print(tests)
+    # launch true creation
     for to_be_created in cases:
         if to_be_created["tcase_name"] not in tests:
             create_test_file(to_be_created, args.dest_dir, to_be_created["keyword"] == UI_TEST_KEYWORD, args.plan)
-    
-        
+
 
 if __name__ == "__main__":
     main()
