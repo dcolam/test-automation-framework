@@ -234,7 +234,7 @@ class TestLinkRunner(object):
         """
         final_report = {}
 
-        self.__init_xml(len(result.result))
+        self.__init_xml()
         for testresult in result.result:
 
             try:
