@@ -173,8 +173,9 @@ class TestLinkRunner(object):
 
     def __init__(self, server_url, project_id,
                  platformname, must_create_build,
-                 testlink_key, verbose=False):
+                 testlink_key, verbose=False, generate_xml=False):
         self.server_url = server_url
+        self.generate_xml = generate_xml
         self.project_id = project_id
         self.platformname = platformname
         self.must_create_build = must_create_build
@@ -204,16 +205,16 @@ class TestLinkRunner(object):
             print(result)
 
     def __init_xml(self):
-        self.xml = lxml.etree.Element("testsuite", time=self.stopTime - self.start_time)
+        self.xml = lxml.etree.Element("testsuite", time=str(self.stopTime - self.start_time).encode("utf-8"))
 
     def __finalize_xml(self):
-        self.xml.set("failures", self.failure)
-        self.xml.set("errors", self.error)
-        self.xml.set("tests", self.tests)
+        self.xml.set("failures", str(self.failure))
+        self.xml.set("errors", str(self.error))
+        self.xml.set("tests", str(self.tests))
         with contextlib.suppress(OSError):
             os.makedirs("./test-reports")
         with open("./test-reports/TEST-" + str(time.time()) + ".xml", "wb") as xmlfile:
-            xmlfile.write(lxml.etree.tostring(self.xml, pretty_print=True).encode("utf-8"))
+            xmlfile.write(lxml.etree.tostring(self.xml, pretty_print=True))
 
     def __push_xml(self, report):
         element = lxml.etree.SubElement(self.xml, "testcase", classname=str(report["testcaseid"]), name=report["name"])
@@ -221,8 +222,9 @@ class TestLinkRunner(object):
             lxml.etree.SubElement(element, "failure", message=report["note"], type="AssertionError")
             self.failure += 1
         elif report["state"] == 2:
-            lxml.etree.SubElement(element, 'error', message=report["note"], type="Exception")
+            lxml.etree.SubElement(element, 'error', message=report["note"], type=str(report["failureException"]))
             self.error += 1
+        self.tests += 1
 
     def generateReport(self, test, result):
         """Send per-test report to testling and generate xml JUnit report if was asked
@@ -248,7 +250,7 @@ class TestLinkRunner(object):
                         "note": "",
                         "nb": 1,
                         "states": [testresult[0]],
-                        "name": testresult[1].__name__
+                        "name": testcaseid + "." + testresult[1]._testMethodName
                     }
                 if testresult[0] != 0:
                     final_report[testcaseid]["state"] = max(testresult[0], final_report[testcaseid]["state"])
@@ -262,7 +264,8 @@ class TestLinkRunner(object):
                         "note": testresult[3],
                         "nb": 1,
                         "states": [testresult[0]],
-                        "name": testresult[1].__name__
+                        "name":  testcaseid + "." + testresult[1]._testMethodName,
+                        "failure_exception": testresult[1].failureException
                     })
             except Exception as e:
                 _log.error("report was not sent due to " + str(e))
@@ -271,7 +274,7 @@ class TestLinkRunner(object):
 
         for report in final_report.values():
             self._sendReport(report)
-        if self.generate_xml:
+        if hasattr(self, "generate_xml") and self.generate_xml:
             self.__finalize_xml()
 
     def _init_cases(self, testsuite):
@@ -284,10 +287,10 @@ class TestLinkRunner(object):
     def run(self, test):
         "Run the given test case or test suite."
         result = _TestLinkTestResult(2)
-        self.start_time = datetime.datetime.now()
+        self.start_time = time.time()
         self._init_cases(test)
         test(result)
-        self.stopTime = datetime.datetime.now()
+        self.stopTime = time.time()
         result.execution_time = self.stopTime - self.start_time
         self.generateReport(test, result)
             
@@ -362,7 +365,6 @@ class TestLinkTestLoader(unittest.TestLoader):
     def __init__(self, **kwargs):
         self.select_ui = not kwargs.get("only_fonctional", False)
         self.select_fonctional = not kwargs.get("only_ui", False)
-        self.generate_xml = kwargs.get("generate_xml", False)
         if kwargs.get("ext_ids", None):
             self.id_list = kwargs.get("ext_ids")
         if len(kwargs.get("name_pattern", "")) > 0:
