@@ -91,12 +91,12 @@ def launch(config_module=None):
 
 def _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
                   MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, verbose=False, test_pattern=None, **kwargs):
-            defaultTestLoader = TestLinkTestLoader(**kwargs)
-            args = ["", "discover", "-s", TEST_MODULE]
-            if test_pattern:
-                args.append("-p")
-                args.append(str(test_pattern))
-            main(module=None,
-                 testRunner=TestLinkRunner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
-                                           MUST_CREATE_BUILD, TESTLINK_API_KEY, verbose=verbose),
-                 argv=args, testLoader=defaultTestLoader)
+    defaultTestLoader = TestLinkTestLoader(**kwargs)
+    args = ["", "discover", "-s", TEST_MODULE]
+    if test_pattern:
+        args.append("-p")
+        args.append(str(test_pattern))
+    main(module=None,
+         testRunner=TestLinkRunner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
+                                   MUST_CREATE_BUILD, TESTLINK_API_KEY, verbose=verbose, generate_xml=True),
+         argv=args, testLoader=defaultTestLoader)
