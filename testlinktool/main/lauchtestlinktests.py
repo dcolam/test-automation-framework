@@ -74,7 +74,7 @@ def launch(config_module=None):
     filter_args = {
         "only_ui": args.only_ui,
         "only_fonctional": args.only_fonctional,
-        "id_list": args.ext_ids,    
+        "ext_ids": args.ext_ids,
         "name_pattern": args.name_pattern,
         "generate_xml": True
     }
