@@ -6,9 +6,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   install
-   generate_test
-   launch
+   fr
+   en
    api_documentation
 
 

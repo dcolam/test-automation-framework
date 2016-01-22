@@ -1,24 +1,24 @@
-========================
-Les wrapper sur unittest
-========================
+==============================
+unittest and selenium wrappers
+==============================
 
-Le lien avec sélénium:
-======================
+selenium WLDM API
+=================
 
-Les objets de test
+Test ojects
 ------------------
 
 .. automodule:: testlinktool.wrapper.UITestCase
     :members:
 
-L'API facilitant l'accès à selenium
------------------------------------
+WLDM selenium wrapper API
+-------------------------
 
 .. automodule:: testlinktool.wrapper.SeleniumWrapper
     :members:
 
-Le lien avec testlink:
-======================
+TestLink runner and wrappers
+============================
 
 .. automodule:: testlinktool.wrapper.TestLinkReport
     :members:
