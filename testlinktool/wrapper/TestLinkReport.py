@@ -405,8 +405,8 @@ class TestLinkTestLoader(unittest.TestLoader):
         :rtype: bool
         """
         from testlinktool.wrapper.UITestCase import UITestCase
-        return (not issubclass(obj, UITestCase) and not self.select_ui) or\
-               (issubclass(obj, UITestCase) and not self.select_fonctional)
+        return (not issubclass(obj, UITestCase) and self.select_fonctional) or\
+               (issubclass(obj, UITestCase) and self.select_ui)
 
     def is_authorized_by_id_filter(self, obj):
         """
