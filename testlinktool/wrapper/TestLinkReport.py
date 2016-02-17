@@ -393,18 +393,29 @@ class TestLinkTestLoader(unittest.TestLoader):
             # match the name pattern if such a regex exists
             # is in selected ids if asked by the user
             # has the good tag if such filter is selected
-            if is_a_test_object:
-                if issubclass(obj, UITestCase) and not self.select_ui:
-                    return False
-                if not issubclass(obj, UITestCase) and not self.select_fonctional:
-                    return False
-                if self.id_list and (not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list):
-                    return False
-                if not self.modul_name_regex.match(name):
-                    return False
-                return True
-            return False
+            return is_a_test_object and self.is_authorized_by_tag_filter(obj) \
+                   and self.is_authorized_by_id_filter(obj) and self.modul_name_regex.match(name)
         return __filter
+
+    def is_authorized_by_tag_filter(self, obj):
+        """checkout the test is authorized by "Only UI" or "Only functional" tags if asked by command
+
+        :param obj:
+        :return:
+        :rtype: bool
+        """
+        from testlinktool.wrapper.UITestCase import UITestCase
+        return (not issubclass(obj, UITestCase) and not self.select_ui) or\
+               (issubclass(obj, UITestCase) and not self.select_fonctional)
+
+    def is_authorized_by_id_filter(self, obj):
+        """
+
+        :param obj:
+        :return:
+        :rtype: bool
+        """
+        return not (self.id_list and (not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list))
 
     def loadTestsFromModule(self, module, use_load_tests=True):
         """Return a suite of all tests cases contained in the given module"""
