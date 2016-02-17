@@ -381,24 +381,39 @@ class TestLinkTestLoader(unittest.TestLoader):
         loaded_suite = self.suiteClass(map(testCaseClass, testCaseNames))
         return loaded_suite
 
+    def __filter_module_names(self, module):
+        from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
+
+        def __filter(name):
+            obj = getattr(module, name)
+            is_a_test_object = isinstance(obj, type) and \
+                               issubclass(obj, unittest.TestCase) and \
+                               obj not in [UITestCase, UITestLinkTestCase]
+            # a good name must fit this conditions :
+            # match the name pattern if such a regex exists
+            # is in selected ids if asked by the user
+            # has the good tag if such filter is selected
+            if is_a_test_object:
+                if issubclass(obj, UITestCase) and not self.select_ui:
+                    return False
+                if not issubclass(obj, UITestCase) and not self.select_fonctional:
+                    return False
+                if self.id_list and (not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list):
+                    return False
+                if not self.modul_name_regex.match(name):
+                    return False
+                return True
+            return False
+        return __filter
+
     def loadTestsFromModule(self, module, use_load_tests=True):
         """Return a suite of all tests cases contained in the given module"""
         tests = []
-        from testlinktool.wrapper.UITestCase import UITestCase, UITestLinkTestCase
-        modul_name_regex = re.compile(self.test_name_pattern)
-        for name in dir(module):
+        self.modul_name_regex = re.compile(self.test_name_pattern)
+        names = filter(self.__filter_module_names(module), dir(module))
+        for name in names:
             obj = getattr(module, name)
-            if isinstance(obj, type) and issubclass(obj, unittest.TestCase) and obj not in [UITestCase, UITestLinkTestCase]:
-                if issubclass(obj, UITestCase) and not self.select_ui:
-                    continue
-                if not issubclass(obj, UITestCase) and not self.select_fonctional:
-                    continue
-                if self.id_list and (not issubclass(obj, TestLinkTestCase) or obj.external_id not in self.id_list):
-                    continue
-                if not modul_name_regex.match(name):
-                    continue
-
-                tests.append(self.loadTestsFromTestCase(obj))
+            tests.append(self.loadTestsFromTestCase(obj))
 
         load_tests = getattr(module, 'load_tests', None)
         tests = self.suiteClass(tests)
