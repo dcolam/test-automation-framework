@@ -1,14 +1,14 @@
 {
     "TEST_MODULE": "tests",
-    "TESTLINK_API_KEY": "08fa7924747a5f1671f04e58488d3781",
+    "TESTLINK_API_KEY": "",
     "CUSTOM_FIELD_NAME_LIST": [
         "execution_server", "client_email", "account_id", "domain_name", "ldap_server_dn", "ldap_server_hostname",
         "ldap_server_login", "ldap_server_port", "smtp_relay_server", "smtp_reply_code", "smtp_reply_reason",
         "vaderetro_score", "vaderetro_status"
     ],
     "MUST_CREATE_BUILD": true,
-    "TESTLINK_PROJECT_ID": 3377,
-    "TESTLINK_SERVER": "http://192.168.15.83/testlink/lib/api/xmlrpc/v1/xmlrpc.php",
+    "TESTLINK_PROJECT_ID": 1,
+    "TESTLINK_SERVER": "http://127.0.0.1/testlink/lib/api/xmlrpc/v1/xmlrpc.php",
     "TESTLINK_PROJECT_NAME": " POC-QualifSelenium",
     "TESTLINK_PLATFORM_NAME": "POC-platform",
     "UI_TEST_KEYWORD": "UI"
