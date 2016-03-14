@@ -8,7 +8,7 @@ Copyright (c) 201x "Vade Retro Technology"
 This file is part of test-automation-framework.
 
 
-xxxxx is free software: you can redistribute it and/or modify
+test-automation-framework is free software: you can redistribute it and/or modify
 
 it under the terms of the GNU General Public License as published by
 
