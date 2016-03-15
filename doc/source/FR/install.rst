@@ -65,6 +65,6 @@ Installer avec setup.py
 
 .. sourcecode:: bash
 
-    svn co git+https://github.com/vaderetro/testlink-test-wrapper
-    cd test_automation_framework/bin
+    git clone https://github.com/VadeRetro/test-automation-framework
+    cd test-automation-framework
     python setup.py install

@@ -31,8 +31,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
-from os import listdir
-
 from setuptools import setup
 
 setup(name='test-automation-framework',
