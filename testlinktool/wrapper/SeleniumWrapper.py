@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 201x "Vade Retro Technology"
+Copyright (c) 2016 "Vade Retro Technology"
 
 ...
 
@@ -240,5 +240,5 @@ class SeleniumWrapperMixin:
     def close_driver(self):
         try:
             self.driver.close()
-        except (ConnectionRefusedError, AttributeError) as e:
+        except (ConnectionRefusedError, AttributeError, ResourceWarning) as e:
             _log.debug(e)

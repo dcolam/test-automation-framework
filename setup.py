@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 201x "Vade Retro Technology"
+Copyright (c) 2016 "Vade Retro Technology"
 
 ...
 
@@ -31,6 +31,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
+from os import listdir
+
 from setuptools import setup
 
 setup(name='test-automation-framework',
@@ -67,4 +69,5 @@ setup(name='test-automation-framework',
               'generate_testlink_test = testlinktool.main.generate_test:main',
               'launch_testlink_test = testlinktool.main.lauchtestlinktests:launch',
           ],
+
       })

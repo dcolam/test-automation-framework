@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="already_existing">
+        This is an existing element
+    </div>
+    <div id="hidden" style="display: none;">
+        This is an hidden element
+    </div>
+    <script type="text/javascript">
+        setTimeout(function(){
+            document.body.innerHTML = '<div id="timeouted">bla</div>' + document.body.innerHTML;
+        }, 25000);
+    </script>
+</body>
+</html>

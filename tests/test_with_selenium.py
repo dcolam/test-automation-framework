@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 201x "Vade Retro Technology"
+Copyright (c) 2016 "Vade Retro Technology"
 
 ...
 
@@ -35,8 +35,8 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from time import sleep
-from wrapper.UITestCase import UITestLinkTestCase
-from wrapper.TestLinkReport import TestLinkTestCase
+from testlinktool.wrapper.UITestCase import UITestLinkTestCase
+
 
 class ZDSIndex(UITestLinkTestCase):
     
@@ -87,44 +87,3 @@ class ZDSIndex(UITestLinkTestCase):
         sleep(1.2)
         self.assertIn("rechercher/?q=python", driver.current_url)
         driver.close()
-
-
-class TestStringMethods(TestLinkTestCase):
-
-  @classmethod
-  def get_plan_name(cls):
-      return "TestString"
-
-  def test_upper(self):
-      print("test")
-      self.assertEqual('foo'.upper(), 'FOO')
-
-  def test_isupper(self):
-      self.assertTrue('FOO'.isupper())
-      self.assertFalse('Foo'.isupper())
-
-  def test_split(self):
-      s = 'hello world'
-      self.assertEqual(s.split(), ['hello', 'world'])
-      # check that s.split fails when the separator is not a string
-      with self.assertRaises(TypeError):
-          s.split(2)
-
-class TestStringMethods2(TestLinkTestCase):
-  @classmethod
-  def get_plan_name(cls):
-      return "TestString"
-
-  def test_upper(self):
-      self.assertEqual('foo'.upper(), 'FOO')
-
-  def test_isupper(self):
-      self.assertTrue('FOO'.isupper())
-      self.assertFalse('Foo'.isupper())
-
-  def test_split(self):
-      s = 'hello world'
-      self.assertEqual(s.split(), ['hello', 'worlds'])
-      # check that s.split fails when the separator is not a string
-      with self.assertRaises(TypeError):
-          s.split(2)
