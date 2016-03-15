@@ -11,15 +11,20 @@ sudo: false
 addons:
   apt:
     packages:
-      - libz-dev
       - libxml2-dev
-      - libxslt-dev
       - python3-dev
-      - firefox
+      - phantomjs
       - unzip
 
 install:
   - travis_retry pip install -r requirements.txt
+
+env:
+  global:
+    - CHROME_REVISION=`curl -s http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/LAST_CHANGE`
+    - CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
+    - PATH=$PATH:$PWD/chrome-linux
+
 
 script:
   - export CHROME_REVISION=`curl -s http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/LAST_CHANGE`
