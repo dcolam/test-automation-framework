@@ -1,0 +1,23 @@
+git:
+  depth: 1
+
+language: python
+
+python:
+  - 3.4
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - libz-dev
+      - libxml2-dev
+      - libxslt-dev
+      - python3-dev
+
+install:
+  - travis_retry pip install -r requirements.txt
+
+script:
+  - python setup.py test -s tests
