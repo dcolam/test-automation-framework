@@ -11,6 +11,15 @@
     <div id="hidden" style="display: none;">
         This is an hidden element
     </div>
+    <div>
+        <form id="testform" method="get">
+            <select name="selected">
+                <option value="1">number1</option>
+                <option value="2">number2</option>
+            </select>
+            <input type="submit" value="sub" name="subform">
+        </form>
+    </div>
     <script type="text/javascript">
         setTimeout(function(){
             document.body.innerHTML = '<div id="timeouted">bla</div>' + document.body.innerHTML;
