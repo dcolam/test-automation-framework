@@ -17,12 +17,19 @@
                 <option value="1">number1</option>
                 <option value="2">number2</option>
             </select>
+            <button role="button" id="clickable">enabled</button>
+            <button role="button" id="timeout_clickable">enabled</button>
+            <button role="button" id="non_clickable" disabled>Disabled</button>
+            <button role="button" id="timeout_non_clickable" disabled>Disabled</button>
+
             <input type="submit" value="sub" name="subform">
         </form>
     </div>
     <script type="text/javascript">
         setTimeout(function(){
             document.body.innerHTML = '<div id="timeouted">bla</div>' + document.body.innerHTML;
+            document.getElementById("timeout_non_clickable").removeAttribute("disabled");
+            document.getElementById("timeout_clickable").setAttribute("disabled", "true");
         }, 25000);
     </script>
 </body>
