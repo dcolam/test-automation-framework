@@ -223,7 +223,7 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         self.assertTrue(element.is_enabled())
 
     def tearDown(self):
-        self.driver.close()
+        self.close_driver()
 
 
 class UITestLinkTestCase(TestLinkTestCase, UITestCase):

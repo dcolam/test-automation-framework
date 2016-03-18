@@ -243,3 +243,7 @@ class SeleniumWrapperMixin:
         except (ConnectionRefusedError, AttributeError, ResourceWarning) as e:
 
             _log.debug(e)
+
+    def __del__(self):
+        self.close_driver()
+        super(SeleniumWrapperMixin, self).__del__()
