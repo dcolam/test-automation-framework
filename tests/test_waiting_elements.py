@@ -42,27 +42,27 @@ from testlinktool.wrapper.UITestCase import UITestCase
 
 
 class WaitingElement(TestCase):
-
-    def test_waiting_existing_element(self):
+    def setUp(self):
         self.tested_object = UITestCase()
         self.tested_object.get_phantomjs()
         self.tested_object.driver.get("file://" + join(dirname(__file__), "html_file.html"))
+    def test_waiting_existing_element(self):
         self.assertTrue(self.tested_object.wait_element(By.ID, "already_existing", 5))
 
     def test_waiting_hidden_element(self):
-        self.tested_object = UITestCase()
-        self.tested_object.get_phantomjs()
-        self.tested_object.driver.get("file://" + join(dirname(__file__), "html_file.html"))
-
         self.assertTrue(self.tested_object.element_does_not_appear_after_waiting(By.ID, "hidden", 5))
 
     def test_waiting_element_discovered_after_sometime(self):
-        self.tested_object = UITestCase()
-        self.tested_object.get_phantomjs()
-        self.tested_object.driver.get("file://" + join(dirname(__file__), "html_file.html"))
 
         self.assertTrue(self.tested_object.element_does_not_appear(By.ID, "timeouted"))
         self.assertFalse(self.tested_object.element_does_not_appear_after_waiting(By.ID, "timeouted", 30))
+
+    def test_clickable(self):
+        self.assertRaises(AssertionError, self.tested_object.assertIsClickable, By.ID, "non_clickable")
+        self.assertRaises(AssertionError, self.tested_object.assertIsClickable, By.ID, "timeout_non_clickable")
+        self.tested_object.assertIsClickable(By.ID, "timeout_non_clickable", 30)
+        self.assertRaises(AssertionError, self.tested_object.assertIsNotClickable, By.ID, "clickable")
+        self.tested_object.assertIsNotClickable(By.ID, "timeout_clickable", 30)
 
 
 class TestSelection(TestCase):

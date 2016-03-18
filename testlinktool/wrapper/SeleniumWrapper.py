@@ -226,11 +226,12 @@ class SeleniumWrapperMixin:
     def _find_with_timemout_or_directly(self, locator, rule, timeout=-1, must_be_clickable=True):
         if timeout > 0:
             condition = EC.element_to_be_clickable
+            waiter = WebDriverWait(self.driver, timeout)
             if not must_be_clickable:
-                condition = EC.presence_of_element_located
-            element = WebDriverWait(self.driver, timeout).until(
-                    condition((locator, rule))
-            )
+                waiter.until_not(condition((locator, rule)))
+                element = self.driver.find_element(locator, rule)
+            else:
+                element = waiter.until(condition((locator, rule)))
         else:
             element = self.driver.find_element(locator, rule)
             if must_be_clickable and not element.is_enabled():

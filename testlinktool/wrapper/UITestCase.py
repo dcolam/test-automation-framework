@@ -215,12 +215,34 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
             self.assertIn(value, element_value)
 
     def assertIsNotClickable(self, locator, rule, timeout=-1):
-        element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=False)
-        self.assertFalse(element.is_enabled())
+        """Check an element is not clickable
+
+        :param locator:
+        :param rule:
+        :param timeout: if positive, will try to wait until element is no longer clickable
+        :type timeout: int
+        :return:
+        """
+        try:
+            element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=False)
+            self.assertFalse(element.is_enabled())
+        except (TimeoutException, AttributeError):
+            raise self.failureException("Could not find {} element or was clickable".format(rule))
 
     def assertIsClickable(self, locator, rule, timeout=-1):
-        element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=True)
-        self.assertTrue(element.is_enabled())
+        """Check an element is clickable
+
+        :param locator:
+        :param rule:
+        :param timeout: if positive, will try to wait until element is clickable
+        :type timeout: int
+        :return:
+        """
+        try:
+            element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=True)
+            self.assertTrue(element.is_enabled())
+        except (TimeoutException, AttributeError):
+            raise self.failureException("Could not find {} element as clickable object".format(rule))
 
     def tearDown(self):
         self.close_driver()
