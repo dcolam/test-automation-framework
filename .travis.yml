@@ -1,0 +1,44 @@
+git:
+  depth: 1
+
+language: python
+
+python:
+  - 3.4
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+      - python3-dev
+      - phantomjs
+      - unzip
+
+install:
+  - travis_retry pip install -r requirements.txt
+
+env:
+  global:
+    - CHROME_REVISION=`curl -s http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/LAST_CHANGE`
+    - CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
+    - PATH=$PATH:$PWD/chrome-linux
+
+
+script:
+  - export CHROME_REVISION=`curl -s http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/LAST_CHANGE`
+  - export CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
+  - curl -L -O "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/${CHROME_REVISION}/chrome-linux.zip"
+  - unzip chrome-linux.zip
+
+  - curl -L -O "http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+  - unzip chromedriver_linux64.zip
+
+  - chmod +x chromedriver
+  - mv chromedriver chrome-linux/chromedriver
+  - export PATH=$PATH:$PWD/chrome-linux
+
+  - export CHROME_BINARY=$PWD/chrome-linux/chrome
+  - export CHROMEDRIVER=$PWD/chrome-linux/chromedriver
+  - python setup.py test -s tests

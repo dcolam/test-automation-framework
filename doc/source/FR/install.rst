@@ -58,13 +58,13 @@ Installez les dépendances à lxml:
 
     sudo apt-get install libz-dev libxml2-dev libxslt-dev python3-dev
 
-Lancez simplement ``pip install git+https://github.com/vaderetro/testlink-test-wrapper``
+Lancez simplement ``pip install test-automation-framework``
 
 Installer avec setup.py
 =======================
 
 .. sourcecode:: bash
 
-    svn co git+https://github.com/vaderetro/testlink-test-wrapper
-    cd test_automation_framework/bin
+    git clone https://github.com/VadeRetro/test-automation-framework
+    cd test-automation-framework
     python setup.py install

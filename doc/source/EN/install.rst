@@ -53,13 +53,13 @@ You need to install lxml dependencies:
 
     sudo apt-get install libz-dev libxml2-dev libxslt-dev python3-dev
 
-Just use ``pip install git+https://github.com/vaderetro/testlink-test-wrapper``
+Just use ``pip install test-automation-framework``
 
 Install with setup.py
 =====================
 
 .. sourcecode:: bash
 
-    git clone git+https://github.com/vaderetro/testlink-test-wrapper
-    cd test_automation_framework
+    git clone https://github.com/VadeRetro/test-automation-framework
+    cd test-automation-framework
     python setup.py install
