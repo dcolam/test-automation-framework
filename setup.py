@@ -66,5 +66,11 @@ setup(name='test-automation-framework',
           'console_scripts': [
               'generate_testlink_test = testlinktool.main.generate_test:main',
               'launch_testlink_test = testlinktool.main.lauchtestlinktests:launch',
+<<<<<<< HEAD
           ],
       })
+=======
+          ]
+      }
+      )
+>>>>>>> add unit test to driver selection

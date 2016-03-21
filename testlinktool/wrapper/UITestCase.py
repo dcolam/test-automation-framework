@@ -49,11 +49,13 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
     local = True
     maximize_window = True
     remote_server = ""
+    used_drivers = ["firefox", "chrome"]
     """
     :var driver: the current webdriver
     :var local: if ``True`` use webdriver inside your path, get remote_server otherwise
     :type local: bool
     :var remote_server: the remote_server that host webdrivers
+    :var used_drivers: list of different drivers you will use to test, by default firefox and chrome
     """
 
     def run_test_on_current_browser(self):
@@ -78,6 +80,8 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         """
         Launch test scenario in Chrome Web Driver
         """
+        if "chrome" not in self.used_drivers:
+            self.skipTest("do not use chrome")
         try:
             if self.local:
                 self.driver = webdriver.Chrome()
@@ -96,6 +100,8 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         """
         Lauch test scenario in Firefox Web Driver
         """
+        if "firefox" not in self.used_drivers:
+            self.skipTest("do not use firefox")
         self.get_firefox()
         if self.maximize_window:
             self.driver.maximize_window()
