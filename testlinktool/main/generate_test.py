@@ -85,12 +85,12 @@ def __is_a_functions(precondition):
 
 
 def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
-    """generate the test structuyre
+    """generate the test structure
 
     :param test_data:
-    :param dest_dir:
-    :param is_ui:
-    :param plan:
+    :param dest_dir: directory path that will be used to store created tests
+    :param is_ui: tells if this test is UI related
+    :param plan: testlink test plan name
     :param verbose:
     :return:
     """
@@ -124,45 +124,52 @@ def create_test_file(test_data, dest_dir, is_ui, plan, verbose=False):
             .replace('&quot;', "'").split("<p>")
         is_all_function = preconditions and all([__is_a_functions(p) for p in preconditions if p.strip() != ''])
         if is_ui:
-            f.write("    def run_test_on_current_browser(self):\n" +
+            __flush_ui_test(test_data, is_all_function, preconditions, f)
+        else:
+            __flush_non_ui_test(f, is_all_function, preconditions, test_data)
+        f.write("\n")
+    except Exception as e:
+        if verbose:
+            print("something was wrong when creating {} : ERROR {}".format(test_data["tcase_name"], e))
+    finally:
+        f.close()
+
+
+def __flush_non_ui_test(test_file, is_all_function, preconditions, test_data):
+    if not is_all_function and preconditions:
+        test_file.write("    def setUp(self):\n")
+        test_file.write('        """{}\n        """\n        pass\n'.format("\n        ".join(preconditions)))
+    else:
+        test_file.write("    def setUp(self):\n")
+        test_file.write('    {}\n\n'.format("\n        ".join(preconditions)))
+    if len(test_data['steps']) == 0:
+        test_file.write("    def testStep0(self):\n" +
+                        '        """some test\n' +
+                        '            expected:\n' +
+                        '            Unknown"""\n' +
+                        "        pass\n\n")
+    else:
+        for i, step in enumerate(test_data['steps']):
+            test_file.write("    def testStep{}(self):\n".format(i) +
+                            '        """{}\n' +
+                            '            expected:\n' +
+                            '            {}"""\n'.format(step["actions"].strip().replace("\n", "\n        "),
+                                                         step["expected_results"].strip().replace("\n", "\n        ")) +
+                            "        pass\n\n")
+
+
+def __flush_ui_test(test_data, is_all_function, preconditions, test_file):
+    test_file.write("    def run_test_on_current_browser(self):\n" +
                     '        """{}\n        """\n'.format(test_data['summary'].strip().replace("\n", "\n        ")) +
                     "        pass\n\n")
 
-
-            if not is_all_function and preconditions:
-                f.write("    def setUpUi(self):\n")
-                f.write('        """{}"""\n        pass\n'.format("\n        ".join(preconditions)))
-            elif preconditions:
-                f.write("    def setUpUi(self):\n")
-                preconditions = [p.strip().replace('driver', 'self.driver') for p in preconditions]
-                f.write('    {}\n\n'.format("\n        ".join(preconditions)))
-        else:
-
-            if not is_all_function and preconditions:
-                f.write("    def setUp(self):\n")
-                f.write('        """{}\n        """\n        pass\n'.format("\n        ".join(preconditions)))
-            else:
-                f.write("    def setUp(self):\n")
-                f.write('    {}\n\n'.format("\n        ".join(preconditions)))
-            if len(test_data['steps']) == 0:
-                f.write("    def testStep0(self):\n" +
-                        '        """some test\n'\
-                        '            expected:\n'\
-                        '            Unknown"""\n'+
-                        "        pass\n\n")
-            else:
-                for i, step in enumerate(test_data['steps']):
-                    f.write("    def testStep{}(self):\n".format(i) +
-                            '        """{}\n'\
-                            '            expected:\n'\
-                            '            {}"""\n'.format(step["actions"].strip().replace("\n", "\n        "),
-                                                         step["expected_results"].strip().replace("\n", "\n        "))+
-                            "        pass\n\n")
-        f.write("\n")
-    except Exception:
-        pass
-    finally:
-        f.close()
+    if not is_all_function and preconditions:
+        test_file.write("    def setUpUi(self):\n")
+        test_file.write('        """{}"""\n        pass\n'.format("\n        ".join(preconditions)))
+    elif preconditions:
+        test_file.write("    def setUpUi(self):\n")
+        preconditions = [p.strip().replace('driver', 'self.driver') for p in preconditions]
+        test_file.write('    {}\n\n'.format("\n        ".join(preconditions)))
 
 
 def get_tests(testlink_client, keyword, plan, TESTLINK_PROJECT_ID, CUSTOM_FIELD_NAME_LIST):

@@ -67,4 +67,5 @@ setup(name='test-automation-framework',
               'generate_testlink_test = testlinktool.main.generate_test:main',
               'launch_testlink_test = testlinktool.main.lauchtestlinktests:launch',
           ]
-      })
+      }
+      )
