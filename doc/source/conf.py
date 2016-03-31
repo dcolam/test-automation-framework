@@ -55,8 +55,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'testlinktool'
-copyright = '2015, vade-retro technology'
-author = 'vade-retro technology'
+copyright = '2015-2016, VadeRetro Technology'
+author = 'VadeRetro technology'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
