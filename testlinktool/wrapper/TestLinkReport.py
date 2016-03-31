@@ -529,13 +529,11 @@ class TestLinkTestLoader(unittest.TestLoader):
     def getTestCaseNames(self, testCaseClass):
         """Return a sorted sequence of method names found within testCaseClass
         """
-        def isTestMethod(attrname, testCaseClass=testCaseClass,
+        def is_test_method(attrname, testCaseClass=testCaseClass,
                          prefix=self.testMethodPrefix):
             return attrname.startswith(prefix) and \
                 hasattr(getattr(testCaseClass, attrname), '__call__')
-        testFnNames = filter(isTestMethod, dir(testCaseClass))
-        """if self.sortTestMethodsUsing:
-            testFnNames.sort(key=_CmpToKey(self.sortTestMethodsUsing))"""
+        testFnNames = filter(is_test_method, dir(testCaseClass))
         return testFnNames
 
     def discover(self, start_dir, pattern='test*.py', top_level_dir=None):
@@ -601,7 +599,7 @@ class TestLinkTestLoader(unittest.TestLoader):
         else:
             the_module = sys.modules[start_dir]
             top_part = start_dir.split('.')[0]
-            start_dir = os.path.abspath(os.path.dirname((the_module.__file__)))
+            start_dir = os.path.abspath(os.path.dirname(the_module.__file__))
             if set_implicit_top:
                 self._top_level_dir = os.path.abspath(os.path.dirname(os.path.dirname(sys.modules[top_part].__file__)))
                 sys.path.remove(top_level_dir)
@@ -679,8 +677,7 @@ class TestLinkTestLoader(unittest.TestLoader):
                     try:
                         yield load_tests(self, tests, pattern)
                     except Exception as e:
-                        yield self._make_failed_load_tests(package.__name__, e,
-                                                      self.suiteClass)
+                        yield self._make_failed_load_tests(package.__name__, e, self.suiteClass)
 
 if __name__ == "__main__":
     defaultTestLoader = TestLinkTestLoader()
