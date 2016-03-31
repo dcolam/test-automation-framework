@@ -42,9 +42,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, NoSuchWindowException
 import logging
 _log = logging.getLogger("testlinktool.selinum")
+__doc__ = "Mixin collection to access selenium capabilities."
 
 
 class SeleniumWrapperMixin:
+    """
+    Add some shortcut to access to Selenium driver functionalities.
+    """
     driver = None
     local = True
 

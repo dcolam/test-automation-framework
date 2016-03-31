@@ -39,6 +39,7 @@ from testlinktool.wrapper.TestLinkReport import TestLinkTestCase
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from testlinktool.wrapper.SeleniumWrapper import SeleniumWrapperMixin
+__doc__ = "Specialized test cases objects."
 
 
 class UITestCase(unittest.TestCase, SeleniumWrapperMixin):

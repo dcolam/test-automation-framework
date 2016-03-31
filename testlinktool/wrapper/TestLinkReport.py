@@ -52,7 +52,7 @@ import logging
 
 from fnmatch import fnmatch
 from os.path import relpath
-
+__doc__ = "All tools to run test and generate reports to testlink"
 VALID_MODULE_NAME = re.compile(r'[_a-z]\w*\.py$', re.IGNORECASE)
 _log = logging.getLogger("testlink-runner")
 
