@@ -245,7 +245,7 @@ class SeleniumWrapperMixin:
     def close_driver(self):
         try:
             self.driver.close()
-        except (ConnectionRefusedError, AttributeError, ResourceWarning) as e:
+        except (ConnectionRefusedError, AttributeError, ResourceWarning, NoSuchWindowException) as e:
 
             _log.debug(e)
 
