@@ -251,4 +251,3 @@ class SeleniumWrapperMixin:
 
     def __del__(self):
         self.close_driver()
-        super(SeleniumWrapperMixin, self).__del__()
