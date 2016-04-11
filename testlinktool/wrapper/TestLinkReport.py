@@ -588,6 +588,7 @@ class TestLinkTestLoader(unittest.TestLoader):
             raise ImportError('Start directory is not importable: %r' % start_dir)
 
         tests = list(self._find_tests(start_dir, pattern))
+
         return self.suiteClass(tests)
 
     def __import_doted_module_name(self, is_not_importable, set_implicit_top, start_dir, top_level_dir):
