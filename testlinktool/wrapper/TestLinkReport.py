@@ -298,7 +298,7 @@ class TestLinkRunner(object):
                         "nb": 1,
                         "states": [testresult[0]],
                         "name":  testcaseid + "." + testresult[1]._testMethodName,
-                        "failure_exception": testresult[1].failureException
+                        "failure_exception": getattr(testresult[1], "failureException").__name__
                     })
             except Exception as e:
                 _log.error("report was not sent due to " + str(e))
