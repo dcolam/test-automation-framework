@@ -32,6 +32,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
 import unittest
+from datetime import time
+
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.wait import WebDriverWait
@@ -109,7 +111,7 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         self.setUpUi()
         self.run_test_on_current_browser()
 
-    def assertElementDoesNotAppearAfterWaiting(self, locator, rule, timeout):
+    def assertElementDoesNotAppearAfterWaiting(self, locator, rule, timeout, msg=None):
         """check that an element appears even after waiting for *timeout* seconds
 
         :param locator: the engine to process the rule
@@ -119,9 +121,9 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         :param timeout: Number of second that we will poll the DOM. Once this is over, a TimeoutException is raised
         :type: int
         """
-        self.assertTrue(self.element_does_not_appear_after_waiting(locator, rule, timeout))
+        self.assertTrue(self.element_does_not_appear_after_waiting(locator, rule, timeout), msg=msg)
 
-    def assertElementAppearAfterWaiting(self, locator, rule, timeout):
+    def assertElementAppearAfterWaiting(self, locator, rule, timeout, msg=None):
         """check that an element appears after waiting for *timeout* seconds
 
         :param locator: the engine to process the rule
@@ -131,9 +133,9 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         :param timeout: Number of second that we will poll the DOM. Once this is over, a TimeoutException is raised
         :type: int
         """
-        self.assertTrue(self.wait_element(locator, rule, timeout))
+        self.assertTrue(self.wait_element(locator, rule, timeout), msg=msg)
 
-    def assertElementIsPresent(self, locator, rule):
+    def assertElementIsPresent(self, locator, rule, msg=None):
         """check that element is present in DOM.
 
         :param locator: the engine to process the rule
@@ -141,9 +143,9 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         :param rule: the rule the element must match
         :type rule: str
         """
-        self.assertFalse(self.element_does_not_appear(locator, rule))
+        self.assertFalse(self.element_does_not_appear(locator, rule), msg=msg)
 
-    def assertNotChecked(self, locator, rule, timeout=-1):
+    def assertNotChecked(self, locator, rule, timeout=-1, msg=None):
         """assert a checkbox, radiobutton or option is not checked
 
         :param locator: the engine to process the rule
@@ -163,9 +165,9 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
                 element = self.driver.find_element(locator, rule)
         except (NoSuchElementException, TimeoutException) as e:
             raise self.failureException(str(e))
-        self.assertFalse(element.is_selected())
+        self.assertFalse(element.is_selected(), msg=msg)
 
-    def assertChecked(self, locator, rule, timeout=-1):
+    def assertChecked(self, locator, rule, timeout=-1, msg=None):
         """assert a checkbox, radiobutton or option is checked
 
         :param locator: the engine to process the rule
@@ -185,9 +187,9 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
                 element = self.driver.find_element(locator, rule)
         except (NoSuchElementException, TimeoutException) as e:
             raise self.failureException(str(e))
-        self.assertTrue(element.is_selected())
+        self.assertTrue(element.is_selected(), msg=msg)
 
-    def assertHasValue(self, locator, rule, value, timeout=-1, exact=True, case_sensitive=True):
+    def assertHasValue(self, locator, rule, value, timeout=-1, exact=True, case_sensitive=True, msg=None):
         """assert the current form field has the requested value
 
         :param locator: the engine to process the rule
@@ -217,11 +219,29 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
             value = value.lower()
             element_value = element_value.lower()
         if exact:
-            self.assertEqual(element_value, value)
+            self.assertEqual(element_value, value, msg=msg)
         else:
-            self.assertIn(value, element_value)
+            self.assertIn(value, element_value, msg=msg)
 
-    def assertIsNotClickable(self, locator, rule, timeout=-1):
+    def assertTextInElement(self, locator, rule, text, timeout=1, msg=None):
+        """asserts that the given text is in the located element
+
+        :param locator: the engine to process the rule
+        :type locator: selenium.webdriver.common.by.By
+        :param rule: the rule the element must match
+        :type rule: str:
+        :param text: the tested text
+        :param timeout: if positive, driver will wait for the element to appear
+        :type timeout: int
+        :param msg:
+        :return:
+        """
+        if timeout > 0:
+            self.wait_element(locator, rule, timeout)
+        self.assertElementIsPresent(locator, rule, msg=msg)
+        self.assertIn(text, self.driver.find(locator, rule).text)
+
+    def assertIsNotClickable(self, locator, rule, timeout=-1, msg=None):
         """Check an element is not clickable
 
         :param locator:
@@ -232,11 +252,11 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         """
         try:
             element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=False)
-            self.assertFalse(element.is_enabled())
+            self.assertFalse(element.is_enabled(), msg=msg)
         except (TimeoutException, AttributeError):
             raise self.failureException("Could not find {} element or was clickable".format(rule))
 
-    def assertIsClickable(self, locator, rule, timeout=-1):
+    def assertIsClickable(self, locator, rule, timeout=-1, msg=None):
         """Check an element is clickable
 
         :param locator:
@@ -247,7 +267,7 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         """
         try:
             element = self._find_with_timemout_or_directly(locator, rule, timeout, must_be_clickable=True)
-            self.assertTrue(element.is_enabled())
+            self.assertTrue(element.is_enabled(), msg=msg)
         except (TimeoutException, AttributeError):
             raise self.failureException("Could not find {} element as clickable object".format(rule))
 
