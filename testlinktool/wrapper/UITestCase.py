@@ -230,7 +230,7 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         :type locator: selenium.webdriver.common.by.By
         :param rule: the rule the element must match
         :type rule: str:
-        :param text: the tested text
+        :param text: the tested  text
         :param timeout: if positive, driver will wait for the element to appear
         :type timeout: int
         :param msg:
