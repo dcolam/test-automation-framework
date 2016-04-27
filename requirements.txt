@@ -1,4 +1,4 @@
 TestLink-API-Python-client==0.6.2
-selenium==2.52.0
+selenium==2.53.2
 xvfbwrapper==0.2.8
-lxml==3.5.0
+lxml==3.6.0
