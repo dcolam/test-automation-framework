@@ -142,6 +142,9 @@ class _TestLinkTestResult(unittest.TestResult):
         """
         self.success_count += 1
         super(_TestLinkTestResult, self).addSuccess(test)
+        with contextlib.suppress(Exception):
+            for callback in getattr(test, "callbacks", []):
+                callback.on_success(test)
         output = self.complete_output()
         self.result.append((0, test, output, ''))
         if self.verbosity > 1:
@@ -159,6 +162,9 @@ class _TestLinkTestResult(unittest.TestResult):
         super(_TestLinkTestResult, self).addError(test, err)
         _, _exc_str = self.errors[-1]
         output = self.complete_output()
+        with contextlib.suppress(Exception):
+            for callback in getattr(test, "callbacks", []):
+                callback.on_error(test)
         self.result.append((2, test, output, _exc_str))
         if self.verbosity > 1:
             sys.stderr.write('E  ')
@@ -175,6 +181,9 @@ class _TestLinkTestResult(unittest.TestResult):
         super(_TestLinkTestResult, self).addFailure(test, err)
         _, _exc_str = self.failures[-1]
         output = self.complete_output()
+        with contextlib.suppress(Exception):
+            for callback in getattr(test, "callbacks", []):
+                callback.on_failure(test)
         self.result.append((1, test, output, _exc_str))
         if self.verbosity > 1:
             sys.stderr.write('F  ')

@@ -271,7 +271,12 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
         except (TimeoutException, AttributeError):
             raise self.failureException("Could not find {} element as clickable object".format(rule))
 
+    def defaultTestResult(self):
+        from testlinktool.wrapper.TestLinkReport import _TestLinkTestResult
+        return _TestLinkTestResult()
+
     def tearDown(self):
+        self.defaultTestResult()
         self.close_driver()
 
 
