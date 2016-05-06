@@ -89,12 +89,12 @@ class TakeScreenshotCallback(TestCallback):
         return default
 
     def on_failure(self, test):
-        if hasattr(test, "driver"):
-            test.driver.save_screenshot(self.filepath_format.format(**self.__get_data()))
+        if hasattr(test, "driver") and test.driver:
+            test.driver.save_screenshot(self.filepath_format.format(**self.__get_data(test)))
 
     def on_error(self, test):
-        if hasattr(test, "driver"):
-            test.driver.save_screenshot(self.filepath_format.format(**self.__get_data(status="error")))
+        if hasattr(test, "driver") and test.driver:
+            test.driver.save_screenshot(self.filepath_format.format(**self.__get_data(test, status="error")))
 
 
 def with_callback(callback):
@@ -103,7 +103,7 @@ def with_callback(callback):
     :param callback:
     :type callback: TestCallback
     """
-    def __(cls):
+    def __wrapper(cls):
         class NewTest(cls):
             def __init__(self, *args, **kwargs):
                 super(NewTest, self).__init__(*args, **kwargs)
@@ -111,4 +111,4 @@ def with_callback(callback):
                     self.callbacks = []
                 self.callbacks.append(callback)
         return NewTest
-    return __
+    return __wrapper

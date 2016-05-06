@@ -91,7 +91,7 @@ class _TestLinkTestResult(unittest.TestResult):
         self.failure_count = 0
         self.error_count = 0
         self.verbosity = verbosity
-
+        self.outputBuffer = StringIO()
         # result is a list of result in 4 tuple
         # (
         #   result code (0: success; 1: fail; 2: error),
@@ -181,7 +181,7 @@ class _TestLinkTestResult(unittest.TestResult):
         super(_TestLinkTestResult, self).addFailure(test, err)
         _, _exc_str = self.failures[-1]
         output = self.complete_output()
-        with contextlib.suppress(Exception):
+        with contextlib.suppress(ValueError):
             for callback in getattr(test, "callbacks", []):
                 callback.on_failure(test)
         self.result.append((1, test, output, _exc_str))
@@ -506,27 +506,29 @@ class TestLinkTestLoader(unittest.TestLoader):
         obj = module
         for part in parts:
             parent, obj = obj, getattr(obj, part)
+        test = None
         if isinstance(obj, types.ModuleType):
-            return self.loadTestsFromModule(obj)
+            test = self.loadTestsFromModule(obj)
         elif isinstance(obj, type) and issubclass(obj, unittest.TestCase):
-            return self.loadTestsFromTestCase(obj)
+            test = self.loadTestsFromTestCase(obj)
         elif (isinstance(obj, types.UnboundMethodType) and
               isinstance(parent, type) and
               issubclass(parent, unittest.TestCase)):
-            return self.suiteClass([parent(obj.__name__)])
+            test = self.suiteClass([parent(obj.__name__)])
         elif isinstance(obj, unittest.TestSuite):
-            return obj
+            test = obj
         elif hasattr(obj, '__call__'):
             test = obj()
             if isinstance(test, unittest.TestSuite):
-                return test
+                test = test
             elif isinstance(test, unittest.TestCase):
-                return self.suiteClass([test])
+                test = self.suiteClass([test])
             else:
                 raise TypeError("calling %s returned %s, not a test" %
                                 (obj, test))
         else:
             raise TypeError("don't know how to make test from: %s" % obj)
+        return test
 
     def loadTestsFromNames(self, names, module=None):
         """Return a suite of all tests cases found using the given sequence
