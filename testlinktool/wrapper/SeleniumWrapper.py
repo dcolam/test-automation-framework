@@ -203,6 +203,19 @@ class SeleniumWrapperMixin:
         if value is not None:
             select.select_by_value(value)
 
+    def __find_option_or_raise(self, text, select_name="", select_id=""):
+        options = None
+        if select_name:
+            options = self.driver.find_elements(By.CSS_SELECTOR, "select[name={}] option".format(select_name))
+        if select_id:
+            options = self.driver.find_elements(By.CSS_SELECTOR, "select#{} option".format(select_id))
+
+        if not options:
+            raise NoSuchElementException("No dropdown menu with id {} or name {}".format(select_id or "empty",
+                                                                                         select_name or "empty"))
+        return options
+
+
     def get_option_value_with_text(self, text, select_name="", select_id=""):
         """get value attribute of the option tag that contains text as visible text
 
@@ -213,15 +226,7 @@ class SeleniumWrapperMixin:
         :rtype: str
         :raises NoSuchElementException: if no select or option is found
         """
-        options = None
-        if select_name:
-            options = self.driver.find_elements(By.CSS_SELECTOR, "select[name={}] option".format(select_name))
-        if select_id:
-            options = self.driver.find_elements(By.CSS_SELECTOR, "select#{} option".format(select_id))
-
-        if not options:
-            raise NoSuchElementException("No dropdown menu with id {} or name {}".format(select_id or "empty",
-                                                                                         select_name or "empty"))
+        options = self.__find_option_or_raise(text, select_name, select_id)
         for option in options:
             if text in option.text:
                 return option.get_attribute("value")
@@ -250,7 +255,7 @@ class SeleniumWrapperMixin:
             _log.debug(e)
 
     def __enter__(self):
-        pass
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close_driver()
