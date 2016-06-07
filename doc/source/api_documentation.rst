@@ -17,6 +17,12 @@ WLDM selenium wrapper API
 .. automodule:: testlinktool.wrapper.TestLinkReport
     :members:
 
+Test callback system and decorator
+---------------------------------
+
+.. automodule:: testlinktool.wrapper.TestCallback
+    :members:
+
 TestLink runner and wrappers
 ============================
 
