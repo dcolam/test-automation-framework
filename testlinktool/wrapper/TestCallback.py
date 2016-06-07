@@ -105,6 +105,10 @@ def with_callback(callback):
     """
     def __wrapper(cls):
         class NewTest(cls):
+            @classmethod
+            def get_name(cls):
+                return cls.__name__
+
             def __init__(self, *args, **kwargs):
                 super(NewTest, self).__init__(*args, **kwargs)
                 if not hasattr(self, "callbacks"):

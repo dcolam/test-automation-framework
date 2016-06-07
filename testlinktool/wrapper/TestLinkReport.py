@@ -283,6 +283,8 @@ class TestLinkRunner(object):
 
             try:
                 testcaseid = testresult[1].__class__.__name__
+                if hasattr("get_name", testresult[1].__class__):
+                    testcaseid = testresult[1].__class__.get_name()
                 testsuitid = testresult[1].__class__.get_plan_name()
                 if testcaseid not in final_report:
                     final_report[testcaseid] = {
