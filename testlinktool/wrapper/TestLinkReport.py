@@ -264,7 +264,7 @@ class TestLinkRunner(object):
             lxml.etree.SubElement(element, "failure", message=report["note"], type="AssertionError")
             self.failure += 1
         elif report["state"] == 2:
-            lxml.etree.SubElement(element, 'error', message=report["note"], type=str(report["failureException"]))
+            lxml.etree.SubElement(element, 'error', message=report["note"], type=str(report["failure_exception"]))
             self.error += 1
         self.tests += 1
 
