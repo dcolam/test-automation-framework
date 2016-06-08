@@ -42,7 +42,7 @@ with open("requirements.txt") as req_file:
     requirements = list(filter(None, req_file.read().split("\n")))
 
 setup(name='test-automation-framework',
-      version='1.0.0',
+      version='1.0.1',
       description='Unittest wrapper to create interactions between testlink and python tests',
       author='Vade Retro technology',
       author_email="support@vade-retro.com",
