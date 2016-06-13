@@ -112,7 +112,8 @@ def launch(config_module=None):
         "generate_xml": True
     }
     if args.is_virtual:
-        with Xvfb(1920, 1080):
+        with Xvfb(1920, 1080, extension="RANDR"):  # will force to use randr to avoid
+            # extension "RANDR" missing on display freezing error
             _lauch_runner(TESTLINK_SERVER, TESTLINK_PROJECT_ID, TESTLINK_PLATFORM_NAME,
                           MUST_CREATE_BUILD, TESTLINK_API_KEY, TEST_MODULE, test_pattern=args.pattern,
                           verbose=args.verbose, **filter_args)
