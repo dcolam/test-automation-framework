@@ -693,5 +693,8 @@ class TestLinkTestLoader(unittest.TestLoader):
                     except Exception as e:
                         yield self._make_failed_load_tests(package.__name__, e, self.suiteClass)
 
+    def _make_failed_import_test(self):
+        return self.suiteClass()
+
 if __name__ == "__main__":
     defaultTestLoader = TestLinkTestLoader()
