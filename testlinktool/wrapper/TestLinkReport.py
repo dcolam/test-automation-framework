@@ -264,7 +264,7 @@ class TestLinkRunner(object):
             lxml.etree.SubElement(element, "failure", message=report["note"], type="AssertionError")
             self.failure += 1
         elif report["state"] == 2:
-            lxml.etree.SubElement(element, 'error', message=report["note"], type=str(report["failureException"]))
+            lxml.etree.SubElement(element, 'error', message=report["note"], type=str(report["failure_exception"]))
             self.error += 1
         self.tests += 1
 
@@ -283,6 +283,8 @@ class TestLinkRunner(object):
 
             try:
                 testcaseid = testresult[1].__class__.__name__
+                if hasattr(testresult[1].__class__, "get_name"):
+                    testcaseid = testresult[1].__class__.get_name()
                 testsuitid = testresult[1].__class__.get_plan_name()
                 if testcaseid not in final_report:
                     final_report[testcaseid] = {
@@ -690,6 +692,9 @@ class TestLinkTestLoader(unittest.TestLoader):
                         yield load_tests(self, tests, pattern)
                     except Exception as e:
                         yield self._make_failed_load_tests(package.__name__, e, self.suiteClass)
+
+    def _make_failed_import_test(self):
+        return self.suiteClass()
 
 if __name__ == "__main__":
     defaultTestLoader = TestLinkTestLoader()
