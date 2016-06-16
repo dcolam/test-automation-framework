@@ -36,11 +36,14 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, NoSuchWindowException
 import logging
+from subprocess import check_output
+
 _log = logging.getLogger("testlinktool.selinum")
 __doc__ = "Mixin collection to access selenium capabilities."
 
@@ -51,11 +54,15 @@ class SeleniumWrapperMixin:
     """
     driver = None
     local = True
+    driver_log = None
 
     def get_firefox(self):
 
         if self.local:
-            self.driver = webdriver.Firefox()
+            version = float(check_output(["firefox", "-v"]).decode("utf-8").strip().replace("Mozilla Firefox ", ""))
+            marionette = version < 47
+            self.driver = webdriver.Firefox(capabilities={"marionette": marionette,
+                                                          'binary': FirefoxBinary(log_file=self.driver_log)})
         else:
             self.driver = webdriver.Remote(
                 command_executor=self.remote_server,
