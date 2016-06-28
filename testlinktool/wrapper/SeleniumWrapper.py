@@ -60,7 +60,7 @@ class SeleniumWrapperMixin:
 
         if self.local:
             version = float(check_output(["firefox", "-v"]).decode("utf-8").strip().replace("Mozilla Firefox ", ""))
-            marionette = version < 47
+            marionette = version >= 47
             self.driver = webdriver.Firefox(capabilities={"marionette": marionette,
                                                           'binary': FirefoxBinary(log_file=self.driver_log)})
         else:
