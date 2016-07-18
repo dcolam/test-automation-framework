@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2016 "Vade Retro Technology"
+Copyright (c) 2016 "Vade Secure"
 
 ...
 
@@ -60,9 +60,11 @@ class SeleniumWrapperMixin:
 
         if self.local:
             version = float(check_output(["firefox", "-v"]).decode("utf-8").strip().replace("Mozilla Firefox ", ""))
+
             marionette = version >= 47
-            self.driver = webdriver.Firefox(capabilities={"marionette": marionette,
-                                                          'binary': FirefoxBinary(log_file=self.driver_log)})
+            capabilities = DesiredCapabilities.FIREFOX.copy()
+            capabilities.update({"marionette": marionette})
+            self.driver = webdriver.Firefox(capabilities=capabilities)
         else:
             self.driver = webdriver.Remote(
                 command_executor=self.remote_server,

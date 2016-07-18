@@ -231,7 +231,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'testlinktool.tex', 'testlinktool Documentation',
-   'vade-retro technology', 'manual'),
+   'Vade Secure', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

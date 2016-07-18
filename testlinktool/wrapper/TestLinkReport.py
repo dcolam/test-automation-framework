@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2016 "Vade Retro Technology"
+Copyright (c) 2016 "Vade Secure"
 
 ...
 
