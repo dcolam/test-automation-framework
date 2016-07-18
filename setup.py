@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2016 "Vade Retro Technology"
+Copyright (c) 2016 "Vade Secure"
 
 ...
 
@@ -44,7 +44,7 @@ with open("requirements.txt") as req_file:
 setup(name='test-automation-framework',
       version='1.0.1',
       description='Unittest wrapper to create interactions between testlink and python tests',
-      author='Vade Retro technology',
+      author='Vade Secure',
       author_email="support@vade-retro.com",
       url='https://github.com/VadeRetro/test-automation-framework',
       keywords=["test", "reporting", "unittest"],

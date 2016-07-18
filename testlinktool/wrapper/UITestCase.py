@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2016 "Vade Retro Technology"
+Copyright (c) 2016 "Vade Secure"
 
 ...
 
@@ -76,8 +76,8 @@ class UITestCase(unittest.TestCase, SeleniumWrapperMixin):
     def get_firefox(self):
         try:
             super(UITestCase, self).get_firefox()
-        except Exception:
-            self.skipTest("No firefox web driver in your PATH")
+        except Exception as e:
+            self.skipTest("No firefox web driver in your PATH " + str(e))
 
     def testChrome(self):
         """
