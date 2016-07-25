@@ -59,6 +59,7 @@ setup(name='test-automation-framework',
         ],
       long_description=long_desc,
       install_requires=requirements,
+      data_files=[(".", ["README.md"])],
       packages=['testlinktool.wrapper', 'testlinktool.main'],
       entry_points={
           'console_scripts': [
